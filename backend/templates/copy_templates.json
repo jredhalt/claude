@@ -1,0 +1,166 @@
+{
+  "headlines": [
+    "Transform Your Skates in Seconds",
+    "Custom Skate Wraps That Turn Heads",
+    "Upgrade Your Game. Upgrade Your Look.",
+    "Stand Out on the Ice",
+    "Your Skates, Your Style",
+    "Pro-Level Customization Made Easy",
+    "Protect & Personalize Your Skates",
+    "The Ultimate Skate Upgrade",
+    "Custom Hockey Skate Wraps",
+    "Make Your Skates Unforgettable",
+    "Easy On. Easy Off. Always Fresh.",
+    "Skate Like a Pro. Look Like One Too.",
+    "Durable. Removable. Incredible.",
+    "Custom Designs for Every Player",
+    "Level Up Your Skate Game"
+  ],
+  "subheadlines": [
+    "Easy to apply. Impossible to ignore.",
+    "Removable, reusable, remarkable.",
+    "Premium vinyl wraps for hockey skates",
+    "Join thousands of players worldwide",
+    "100+ custom designs to choose from",
+    "Installation in under 60 seconds",
+    "No paint. No mess. Just style.",
+    "Protective and stylish",
+    "Built to last season after season",
+    "Free shipping on all orders",
+    "Show your personality on the ice",
+    "The wrap that performs as good as it looks",
+    "Made by hockey players, for hockey players"
+  ],
+  "ctas": [
+    "Shop Now",
+    "Get Yours Today",
+    "Customize Your Skates",
+    "Browse Designs",
+    "Order Now",
+    "Transform Your Skates",
+    "Start Customizing",
+    "Shop Skateskins",
+    "See All Designs",
+    "Upgrade Today",
+    "Join the Movement",
+    "Get Started"
+  ],
+  "body_copy": [
+    "Premium vinyl wraps designed specifically for hockey skates. Easy application, incredible durability, and endless style options.",
+    "Stop blending in. Skateskins give you pro-level customization in seconds. No paint, no permanence, just pure style.",
+    "Tired of boring skates? Our custom wraps protect your gear while making you the talk of the rink.",
+    "From beer league to pros, Skateskins are trusted by players who demand the best. Easy to apply, built to last.",
+    "Your skates work hard. Make them look good too. Skateskins offer protection and personality in one simple wrap.",
+    "Choose from 100+ designs or create your own. Skateskins make customization easy for every player.",
+    "Why settle for stock skates? Upgrade your look in under a minute with Skateskins wraps."
+  ],
+  "social_proof": [
+    "⭐⭐⭐⭐⭐ 10,000+ 5-star reviews",
+    "Trusted by NHL players",
+    "Used by teams across North America",
+    "As seen on Instagram & TikTok",
+    "Join 50,000+ players worldwide",
+    "#1 rated skate wraps"
+  ],
+  "layouts": [
+    {
+      "id": "layout_01",
+      "name": "Bold Headline Top",
+      "structure": {
+        "headline": {"position": "top", "size": "large", "alignment": "center"},
+        "image": {"position": "center", "size": "70%"},
+        "subheadline": {"position": "bottom_third", "size": "medium"},
+        "cta": {"position": "bottom", "size": "button", "style": "bold"}
+      }
+    },
+    {
+      "id": "layout_02",
+      "name": "Side by Side",
+      "structure": {
+        "image": {"position": "left", "size": "50%"},
+        "headline": {"position": "right_top", "size": "large"},
+        "body": {"position": "right_middle", "size": "small"},
+        "cta": {"position": "right_bottom", "size": "button"}
+      }
+    },
+    {
+      "id": "layout_03",
+      "name": "Minimal Center",
+      "structure": {
+        "image": {"position": "center", "size": "80%"},
+        "headline": {"position": "overlay_top", "size": "large", "bg": "transparent"},
+        "cta": {"position": "overlay_bottom", "size": "button", "bg": "solid"}
+      }
+    },
+    {
+      "id": "layout_04",
+      "name": "Feature Grid",
+      "structure": {
+        "headline": {"position": "top", "size": "large"},
+        "images": {"position": "grid", "count": 3, "size": "33%"},
+        "subheadline": {"position": "middle", "size": "medium"},
+        "cta": {"position": "bottom", "size": "button"}
+      }
+    },
+    {
+      "id": "layout_05",
+      "name": "Before After",
+      "structure": {
+        "headline": {"position": "top", "size": "large"},
+        "images": {"position": "split", "count": 2, "labels": ["Before", "After"]},
+        "cta": {"position": "bottom", "size": "button"}
+      }
+    },
+    {
+      "id": "layout_06",
+      "name": "Hero Image",
+      "structure": {
+        "image": {"position": "full", "size": "100%"},
+        "headline": {"position": "overlay_center", "size": "xlarge", "bg": "semi_transparent"},
+        "cta": {"position": "overlay_bottom", "size": "button"}
+      }
+    }
+  ],
+  "color_schemes": [
+    {
+      "name": "Ice Blue",
+      "primary": "#00A8E8",
+      "secondary": "#003459",
+      "accent": "#FF6B35",
+      "text": "#FFFFFF",
+      "background": "#001E2B"
+    },
+    {
+      "name": "Fire Red",
+      "primary": "#D62828",
+      "secondary": "#003049",
+      "accent": "#F77F00",
+      "text": "#FFFFFF",
+      "background": "#1A1A1A"
+    },
+    {
+      "name": "Clean White",
+      "primary": "#000000",
+      "secondary": "#4A4A4A",
+      "accent": "#0066CC",
+      "text": "#000000",
+      "background": "#FFFFFF"
+    },
+    {
+      "name": "Dark Mode",
+      "primary": "#FFFFFF",
+      "secondary": "#00D9FF",
+      "accent": "#FF0080",
+      "text": "#FFFFFF",
+      "background": "#0A0A0A"
+    },
+    {
+      "name": "Hockey Green",
+      "primary": "#2D6A4F",
+      "secondary": "#1B4332",
+      "accent": "#B7E4C7",
+      "text": "#FFFFFF",
+      "background": "#081C15"
+    }
+  ]
+}

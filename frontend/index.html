@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skateskins Ad Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 2px solid #e9ecef;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #2a5298;
+        }
+
+        .upload-zone {
+            border: 3px dashed #667eea;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-zone:hover {
+            background: #f0f4ff;
+            border-color: #5568d3;
+        }
+
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group select,
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .file-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .file-item img {
+            max-width: 100%;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .file-item .filename {
+            font-size: 0.9em;
+            color: #495057;
+            word-break: break-all;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+            }
+        }
+
+        .generated-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-item img,
+        .gallery-item video {
+            width: 100%;
+            display: block;
+        }
+
+        .gallery-item .info {
+            padding: 15px;
+        }
+
+        .gallery-item .filename {
+            font-size: 0.9em;
+            color: #495057;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .gallery-item .download-btn {
+            width: 100%;
+            padding: 8px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .gallery-item .download-btn:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏒 Skateskins Ad Generator</h1>
+            <p>Generate infinite video and static ad variations for your hockey skate wraps</p>
+        </header>
+
+        <div class="stats-bar" id="statsBar">
+            <div class="stat">
+                <div class="stat-number" id="statClips">0</div>
+                <div class="stat-label">B-Roll Clips</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="statPhotos">0</div>
+                <div class="stat-label">Product Photos</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="statVideos">0</div>
+                <div class="stat-label">Generated Videos</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="statAds">0</div>
+                <div class="stat-label">Generated Ads</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('videos')">Video Generator</button>
+                <button class="tab" onclick="switchTab('static')">Static Ads</button>
+                <button class="tab" onclick="switchTab('gallery')">Gallery</button>
+            </div>
+
+            <!-- Video Generator Tab -->
+            <div id="videos" class="tab-content active">
+                <div class="section">
+                    <h2>📹 Upload B-Roll Clips</h2>
+                    <div class="upload-zone" onclick="document.getElementById('videoUpload').click()">
+                        <input type="file" id="videoUpload" accept="video/*" multiple onchange="uploadVideos(this)">
+                        <p style="font-size: 3em; margin-bottom: 10px;">📤</p>
+                        <p style="font-size: 1.2em; margin-bottom: 5px;">Click to upload video clips</p>
+                        <p style="color: #6c757d;">MP4, MOV, AVI supported</p>
+                        <p style="color: #6c757d; font-size: 0.9em; margin-top: 10px;">
+                            Tip: Name files with keywords (e.g., unboxing_01.mp4, application_02.mp4, ice_03.mp4)
+                        </p>
+                    </div>
+                    <div id="uploadedClips" class="file-list"></div>
+                </div>
+
+                <div class="section">
+                    <h2>🎬 Generate Videos</h2>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Number of Videos</label>
+                            <input type="number" id="videoCount" value="5" min="1" max="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Video Format (Optional)</label>
+                            <select id="videoFormat">
+                                <option value="">Random (Recommended)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateVideos()" style="width: 100%; margin-top: 10px; font-size: 1.2em;">
+                        🚀 Generate Videos
+                    </button>
+                </div>
+
+                <div id="videoLoading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Generating videos... This may take a few minutes.</p>
+                </div>
+
+                <div id="videoAlert"></div>
+            </div>
+
+            <!-- Static Ads Tab -->
+            <div id="static" class="tab-content">
+                <div class="section">
+                    <h2>📸 Upload Product Photos</h2>
+                    <div class="upload-zone" onclick="document.getElementById('photoUpload').click()">
+                        <input type="file" id="photoUpload" accept="image/*" multiple onchange="uploadPhotos(this)">
+                        <p style="font-size: 3em; margin-bottom: 10px;">📤</p>
+                        <p style="font-size: 1.2em; margin-bottom: 5px;">Click to upload product photos</p>
+                        <p style="color: #6c757d;">JPG, PNG supported</p>
+                    </div>
+                    <div id="uploadedPhotos" class="file-list"></div>
+                </div>
+
+                <div class="section">
+                    <h2>🎨 Generate Static Ads</h2>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Number of Ads</label>
+                            <input type="number" id="adCount" value="10" min="1" max="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Ad Size</label>
+                            <select id="adSize">
+                                <option value="instagram_square">Instagram Square (1080x1080)</option>
+                                <option value="instagram_story">Instagram Story (1080x1920)</option>
+                                <option value="instagram_feed">Instagram Feed (1080x1350)</option>
+                                <option value="facebook_feed">Facebook Feed (1200x1200)</option>
+                                <option value="tiktok">TikTok (1080x1920)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateAds()" style="width: 100%; margin-top: 10px; font-size: 1.2em;">
+                        🎨 Generate Static Ads
+                    </button>
+                </div>
+
+                <div id="adLoading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Generating static ads...</p>
+                </div>
+
+                <div id="adAlert"></div>
+            </div>
+
+            <!-- Gallery Tab -->
+            <div id="gallery" class="tab-content">
+                <div class="section">
+                    <h2>🎥 Generated Videos</h2>
+                    <button class="btn btn-secondary" onclick="loadGallery()" style="margin-bottom: 15px;">🔄 Refresh</button>
+                    <button class="btn btn-danger" onclick="cleanupFiles()" style="margin-bottom: 15px; margin-left: 10px;">🗑️ Delete All</button>
+                    <div id="videoGallery" class="generated-gallery"></div>
+                </div>
+
+                <div class="section">
+                    <h2>🖼️ Generated Static Ads</h2>
+                    <div id="adGallery" class="generated-gallery"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'gallery') {
+                loadGallery();
+            }
+        }
+
+        // Load statistics
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+
+                document.getElementById('statClips').textContent = data.uploads.broll_clips;
+                document.getElementById('statPhotos').textContent = data.uploads.product_photos;
+                document.getElementById('statVideos').textContent = data.generated.videos;
+                document.getElementById('statAds').textContent = data.generated.static_ads;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load video formats
+        async function loadFormats() {
+            try {
+                const response = await fetch('/api/video/formats');
+                const data = await response.json();
+                const select = document.getElementById('videoFormat');
+
+                data.formats.forEach(format => {
+                    const option = document.createElement('option');
+                    option.value = format.id;
+                    option.textContent = `${format.name} - ${format.description}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading formats:', error);
+            }
+        }
+
+        // Upload videos
+        async function uploadVideos(input) {
+            const files = input.files;
+            for (let file of files) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('/api/video/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    console.log('Uploaded:', data.filename);
+                } catch (error) {
+                    console.error('Upload error:', error);
+                }
+            }
+
+            loadStats();
+            showAlert('videoAlert', `Uploaded ${files.length} video(s) successfully!`, 'success');
+        }
+
+        // Upload photos
+        async function uploadPhotos(input) {
+            const files = input.files;
+            for (let file of files) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('/api/ads/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    console.log('Uploaded:', data.filename);
+                } catch (error) {
+                    console.error('Upload error:', error);
+                }
+            }
+
+            loadStats();
+            showAlert('adAlert', `Uploaded ${files.length} photo(s) successfully!`, 'success');
+        }
+
+        // Generate videos
+        async function generateVideos() {
+            const count = parseInt(document.getElementById('videoCount').value);
+            const format = document.getElementById('videoFormat').value;
+
+            document.getElementById('videoLoading').classList.add('active');
+            document.getElementById('videoAlert').innerHTML = '';
+
+            try {
+                const response = await fetch('/api/video/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        count: count,
+                        format_id: format || null
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById('videoLoading').classList.remove('active');
+
+                if (response.ok) {
+                    showAlert('videoAlert', `✅ ${data.message}`, 'success');
+                    loadStats();
+                } else {
+                    showAlert('videoAlert', `❌ Error: ${data.detail}`, 'error');
+                }
+            } catch (error) {
+                document.getElementById('videoLoading').classList.remove('active');
+                showAlert('videoAlert', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Generate static ads
+        async function generateAds() {
+            const count = parseInt(document.getElementById('adCount').value);
+            const adSize = document.getElementById('adSize').value;
+
+            document.getElementById('adLoading').classList.add('active');
+            document.getElementById('adAlert').innerHTML = '';
+
+            try {
+                const response = await fetch('/api/ads/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        count: count,
+                        ad_size: adSize
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById('adLoading').classList.remove('active');
+
+                if (response.ok) {
+                    showAlert('adAlert', `✅ ${data.message}`, 'success');
+                    loadStats();
+                } else {
+                    showAlert('adAlert', `❌ Error: ${data.detail}`, 'error');
+                }
+            } catch (error) {
+                document.getElementById('adLoading').classList.remove('active');
+                showAlert('adAlert', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Load gallery
+        async function loadGallery() {
+            // Load videos
+            try {
+                const response = await fetch('/api/video/list');
+                const data = await response.json();
+                const gallery = document.getElementById('videoGallery');
+                gallery.innerHTML = '';
+
+                data.videos.forEach(video => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.innerHTML = `
+                        <video src="${video.path}" controls></video>
+                        <div class="info">
+                            <div class="filename">${video.filename}</div>
+                            <div style="color: #6c757d; font-size: 0.85em; margin-bottom: 10px;">${video.size_mb} MB</div>
+                            <a href="${video.path}" download="${video.filename}">
+                                <button class="download-btn">⬇️ Download</button>
+                            </a>
+                        </div>
+                    `;
+                    gallery.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error loading videos:', error);
+            }
+
+            // Load ads
+            try {
+                const response = await fetch('/api/ads/list');
+                const data = await response.json();
+                const gallery = document.getElementById('adGallery');
+                gallery.innerHTML = '';
+
+                data.ads.forEach(ad => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.innerHTML = `
+                        <img src="${ad.path}" alt="${ad.filename}">
+                        <div class="info">
+                            <div class="filename">${ad.filename}</div>
+                            <div style="color: #6c757d; font-size: 0.85em; margin-bottom: 10px;">${ad.size_kb} KB</div>
+                            <a href="${ad.path}" download="${ad.filename}">
+                                <button class="download-btn">⬇️ Download</button>
+                            </a>
+                        </div>
+                    `;
+                    gallery.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error loading ads:', error);
+            }
+        }
+
+        // Cleanup files
+        async function cleanupFiles() {
+            if (!confirm('Are you sure you want to delete all generated files?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cleanup', { method: 'DELETE' });
+                const data = await response.json();
+                alert(data.message);
+                loadStats();
+                loadGallery();
+            } catch (error) {
+                alert('Error deleting files: ' + error.message);
+            }
+        }
+
+        // Show alert
+        function showAlert(elementId, message, type) {
+            const alert = document.getElementById(elementId);
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            loadStats();
+            loadFormats();
+        });
+
+        // Auto-refresh stats every 10 seconds
+        setInterval(loadStats, 10000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+uploads/broll/*
+uploads/photos/*
+uploads/inspiration/*
+!uploads/broll/.gitkeep
+!uploads/photos/.gitkeep
+!uploads/inspiration/.gitkeep
+
+output/videos/*
+output/static_ads/*
+!output/videos/.gitkeep
+!output/static_ads/.gitkeep
+
+# Temporary files
+*.tmp
+temp-audio.m4a
+*.log
+
+# Environment
+.env
+.env.local

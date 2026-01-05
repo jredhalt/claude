@@ -1,0 +1,94 @@
+{
+  "hooks": [
+    {
+      "id": "hook_001",
+      "text": "Transform your skates in 60 seconds",
+      "duration": 2.0,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_002",
+      "text": "The secret pro hockey players don't want you to know",
+      "duration": 2.5,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_003",
+      "text": "POV: You just upgraded your skates",
+      "duration": 2.0,
+      "style": "top_left"
+    },
+    {
+      "id": "hook_004",
+      "text": "Watch this satisfying transformation",
+      "duration": 2.0,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_005",
+      "text": "Stop scrolling. You need to see this.",
+      "duration": 2.0,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_006",
+      "text": "This is how you make your skates stand out",
+      "duration": 2.5,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_007",
+      "text": "Wait for the final reveal...",
+      "duration": 2.0,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_008",
+      "text": "Your skates but better",
+      "duration": 1.5,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_009",
+      "text": "I wish I knew about this sooner",
+      "duration": 2.0,
+      "style": "top_left"
+    },
+    {
+      "id": "hook_010",
+      "text": "This changes everything",
+      "duration": 1.5,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_011",
+      "text": "What $20 can do to your hockey skates",
+      "duration": 2.5,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_012",
+      "text": "Everyone at the rink will ask you about these",
+      "duration": 2.5,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_013",
+      "text": "The easiest skate upgrade you'll ever do",
+      "duration": 2.5,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_014",
+      "text": "Customize your skates like a pro",
+      "duration": 2.0,
+      "style": "bold_center"
+    },
+    {
+      "id": "hook_015",
+      "text": "This took me less than a minute",
+      "duration": 2.0,
+      "style": "top_left"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "formats": [
+    {
+      "id": "static_hook",
+      "name": "Static Hook",
+      "description": "Simple opening text hook followed by b-roll compilation",
+      "structure": [
+        {"type": "text_overlay", "source": "hook", "duration": 2.0},
+        {"type": "broll_compilation", "min_clips": 3, "max_clips": 5, "clip_duration": [2, 4]}
+      ],
+      "total_duration": [15, 20]
+    },
+    {
+      "id": "step_by_step",
+      "name": "Step-by-Step Tutorial",
+      "description": "Numbered steps showing installation process",
+      "structure": [
+        {"type": "text_overlay", "text": "5 Steps to Install Your Skateskins", "duration": 2.0},
+        {"type": "step", "number": 1, "text": "Unbox your Skateskin", "broll": "unboxing", "duration": 3},
+        {"type": "step", "number": 2, "text": "Clean your skate surface", "broll": "preparation", "duration": 3},
+        {"type": "step", "number": 3, "text": "Peel and position", "broll": "application", "duration": 3},
+        {"type": "step", "number": 4, "text": "Press and smooth", "broll": "application", "duration": 3},
+        {"type": "step", "number": 5, "text": "Hit the ice!", "broll": "ice_shots", "duration": 3}
+      ],
+      "total_duration": [17, 20]
+    },
+    {
+      "id": "before_after",
+      "name": "Before/After Transformation",
+      "description": "Shows the transformation with split screen or transitions",
+      "structure": [
+        {"type": "text_overlay", "text": "Before", "duration": 1.5},
+        {"type": "broll", "category": "before", "duration": 3},
+        {"type": "text_overlay", "text": "After", "duration": 1.5},
+        {"type": "broll", "category": "after", "duration": 3},
+        {"type": "broll_compilation", "category": "ice_shots", "min_clips": 2, "max_clips": 3, "clip_duration": [3, 4]}
+      ],
+      "total_duration": [15, 18]
+    },
+    {
+      "id": "quick_tip",
+      "name": "Quick Tip",
+      "description": "Short, punchy tips with overlay text",
+      "structure": [
+        {"type": "text_overlay", "source": "hook", "duration": 2.0},
+        {"type": "tip_overlay", "text": "Pro tip: Use a squeegee for perfect application", "duration": 3, "broll": true},
+        {"type": "broll_compilation", "min_clips": 2, "max_clips": 4, "clip_duration": [2, 3]}
+      ],
+      "total_duration": [10, 15]
+    },
+    {
+      "id": "showcase",
+      "name": "Product Showcase",
+      "description": "Highlights product features and benefits",
+      "structure": [
+        {"type": "text_overlay", "source": "hook", "duration": 2.0},
+        {"type": "feature", "text": "Custom designs", "broll": "product", "duration": 3},
+        {"type": "feature", "text": "Easy application", "broll": "application", "duration": 3},
+        {"type": "feature", "text": "Durable protection", "broll": "ice_shots", "duration": 3},
+        {"type": "cta", "text": "Get yours now", "duration": 2}
+      ],
+      "total_duration": [13, 15]
+    },
+    {
+      "id": "satisfying",
+      "name": "Satisfying Compilation",
+      "description": "ASMR-style satisfying application footage",
+      "structure": [
+        {"type": "text_overlay", "text": "oddly satisfying", "duration": 1.5, "style": "minimal"},
+        {"type": "broll_compilation", "category": "application", "min_clips": 4, "max_clips": 6, "clip_duration": [2, 3], "slow_mo": true}
+      ],
+      "total_duration": [12, 18]
+    },
+    {
+      "id": "pov",
+      "name": "POV Format",
+      "description": "First-person perspective style",
+      "structure": [
+        {"type": "text_overlay", "text": "POV: You just discovered Skateskins", "duration": 2.0, "style": "top_left"},
+        {"type": "broll_compilation", "min_clips": 3, "max_clips": 5, "clip_duration": [2, 4]}
+      ],
+      "total_duration": [12, 18]
+    },
+    {
+      "id": "comparison",
+      "name": "Comparison",
+      "description": "Compare with other solutions",
+      "structure": [
+        {"type": "text_overlay", "text": "Painting your skates", "duration": 2.0},
+        {"type": "text_overlay", "text": "❌ Permanent", "duration": 2.0},
+        {"type": "text_overlay", "text": "Skateskins", "duration": 2.0},
+        {"type": "text_overlay", "text": "✅ Removable & Customizable", "duration": 2.0},
+        {"type": "broll_compilation", "min_clips": 2, "max_clips": 3, "clip_duration": [2, 3]}
+      ],
+      "total_duration": [14, 18]
+    }
+  ]
+}
