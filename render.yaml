@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: skateskins-ad-generator
+    env: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: ENVIRONMENT
+        value: production

@@ -2,6 +2,21 @@
 
 An automated tool for generating infinite variations of video ads and static image ads from b-roll footage and product photos.
 
+## 🌐 NEW: Deploy as a Web Tool!
+
+**Access your ad generator from anywhere!**
+
+### Deploy to Web (Recommended):
+- ⚡ **Railway**: 1-click deploy, free tier available → [Deploy Now](QUICKSTART_WEB.md)
+- 🚀 **Render**: Free tier, auto-deploy from GitHub
+- 🐳 **Docker**: Deploy anywhere with Docker
+
+📖 **Quick Start:** See [QUICKSTART_WEB.md](QUICKSTART_WEB.md) for 5-minute deployment
+
+**OR run locally** (see Installation section below)
+
+---
+
 ## Features
 
 ### Video Compilation

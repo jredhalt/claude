@@ -1,0 +1,48 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+venv
+env
+ENV
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project
+uploads/broll/*
+uploads/photos/*
+uploads/inspiration/*
+output/videos/*
+output/static_ads/*
+*.log
+
+# Documentation
+*.md
+!README.md
+
+# Environment
+.env
+.env.local
+
+# Development
+docker-compose.yml
+.dockerignore

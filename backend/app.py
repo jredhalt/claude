@@ -13,9 +13,13 @@ import os
 import shutil
 from pathlib import Path
 import uvicorn
+from dotenv import load_dotenv
 
 from video_processor import VideoProcessor
 from static_ad_generator import StaticAdGenerator
+
+# Load environment variables
+load_dotenv()
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -330,18 +334,23 @@ async def get_statistics():
 
 
 if __name__ == "__main__":
+    # Get port from environment variable or default to 8000
+    port = int(os.getenv("PORT", 8000))
+    host = os.getenv("HOST", "0.0.0.0")
+    environment = os.getenv("ENVIRONMENT", "development")
+
     print("=" * 60)
     print("Skateskins Ad Generator Server")
     print("=" * 60)
-    print("\n🚀 Starting server...")
-    print("📍 Access the app at: http://localhost:8000")
-    print("📚 API documentation: http://localhost:8000/docs")
+    print(f"\n🚀 Starting server in {environment} mode...")
+    print(f"📍 Access the app at: http://localhost:{port}")
+    print(f"📚 API documentation: http://localhost:{port}/docs")
     print("\n" + "=" * 60)
 
     uvicorn.run(
         "app:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
+        host=host,
+        port=port,
+        reload=(environment == "development"),
         log_level="info"
     )
