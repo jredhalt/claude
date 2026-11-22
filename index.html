@@ -201,10 +201,11 @@ footer{display:flex;justify-content:space-between;padding:26px var(--pad);font-s
 .pcard .svc{display:block;grid-column:auto;margin-top:0;font-weight:600;font-size:18px;letter-spacing:-.02em;margin-bottom:10px;color:var(--blue);min-height:1.3em}
 .pcard ul{list-style:none}
 .pcard .caps{margin-top:14px;border-top:1px solid rgba(12,12,14,.08)}
-.pcard li{display:flex;gap:12px;align-items:center;font-size:15px;padding:10px 0;border-bottom:1px solid rgba(12,12,14,.08);color:var(--ink);opacity:0;transform:translateY(6px);transition:opacity .45s,transform .45s}
-.pcard li::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue);flex:none}
+.pcard li{display:flex;gap:12px;align-items:center;font-size:15px;padding:9px 0;border-bottom:1px solid rgba(12,12,14,.08);color:#a6a5ab;transition:color .45s}
+.pcard li::before{content:"";width:7px;height:7px;border-radius:50%;background:#d6d5d0;flex:none;transition:background .45s}
 .pcard li:last-child{border-bottom:0}
-.pcard li.on{opacity:1;transform:none}
+.pcard li.on{color:var(--ink)}
+.pcard li.on::before{background:var(--blue)}
 .dcopy{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,80px);margin-top:clamp(40px,5vw,72px)}
 .dcopy h3{font-weight:600;font-size:clamp(20px,1.7vw,26px);letter-spacing:-.025em;margin:12px 0 10px}
 .dcopy p{font-size:16px;line-height:1.5;color:#55555a;max-width:44ch}
@@ -281,10 +282,10 @@ h1.hh-d{display:none}
     <div class="stage2">
       <svg class="wires" aria-hidden="true"></svg>
       <div class="ins">
-        <button class="goal" data-k="0">Content</button>
-        <button class="goal" data-k="1">Launches</button>
-        <button class="goal" data-k="2">Partnerships</button>
-        <button class="goal" data-k="3">Experiences</button>
+        <button class="goal" data-k="0">Build</button>
+        <button class="goal" data-k="1">Launch</button>
+        <button class="goal" data-k="2">Grow</button>
+        <button class="goal" data-k="3">Activate</button>
       </div>
       <div class="hub"><span class="hs"><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg></span><b>NOISE</b><small>STUDIO</small></div>
       <div class="pk"><div class="sh s2"></div><div class="sh s1"></div>
@@ -495,12 +496,9 @@ let live=[];
 
 // ---------- how-it-works diagram ----------
 (()=>{
-// four practice areas, each with the services inside it
-const D=[
- ['Organic content','Paid marketing','Influencer & creator strategy'],
- ['Launch strategy & execution','Product development','Launch partnerships'],
- ['Brand collaborations','Influencer & creator strategy','Launch partnerships'],
- ['Live activations','Digital experiences','Brand collaborations']];
+// every service is always listed; the selected stage lights up the ones it uses
+const CAPS=['Product development','Digital experiences','Brand collaborations','Launch strategy & execution','Launch partnerships','Paid marketing','Organic content','Influencer & creator strategy','Live activations'];
+const D=[[0,1,2],[3,4,5],[6,7,5],[8,2,1]];
 const root=document.getElementById('how'),st=root.querySelector('.stage2'),svg=root.querySelector('.wires'),ins=[...root.querySelectorAll('.goal')],hub=root.querySelector('.hub'),card=root.querySelector('.pk');
 const NS='http://www.w3.org/2000/svg';let paths=[],out=null,dots=[],cur=0,timer=null,t0=performance.now();
 function build(){
@@ -519,9 +517,9 @@ function build(){
   paths.forEach((p,i)=>p.classList.toggle('on',i===cur));
 }
 const OF=[...document.querySelectorAll('.offer')];
-const CUL=card.querySelector('.caps');
+const CUL=card.querySelector('.caps');CUL.innerHTML=CAPS.map(t=>`<li>${t.replace('&','&amp;')}</li>`).join('');const CL=[...CUL.children];
 function select(k){cur=k;ins.forEach((b,i)=>b.classList.toggle('on',i===k));paths.forEach((p,i)=>p.classList.toggle('on',i===k));
-  CUL.innerHTML=D[k].map(t=>`<li>${t.replace('&','&amp;')}</li>`).join('');[...CUL.children].forEach((li,i)=>setTimeout(()=>li.classList.add('on'),380+i*90));t0=performance.now()}
+  CL.forEach((li,i)=>li.classList.toggle('on',D[k].includes(i)));t0=performance.now()}
 function auto(){clearInterval(timer);timer=setInterval(()=>select((cur+1)%ins.length),3600)}
 ins.forEach((b,i)=>{b.addEventListener('mouseenter',()=>{select(i);auto()});b.addEventListener('click',()=>{select(i);auto()})});
 function tick(now){requestAnimationFrame(tick);if(!paths.length)return;const t=(now-t0)/1000;
