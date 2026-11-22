@@ -201,11 +201,10 @@ footer{display:flex;justify-content:space-between;padding:26px var(--pad);font-s
 .pcard .svc{display:block;grid-column:auto;margin-top:0;font-weight:600;font-size:18px;letter-spacing:-.02em;margin-bottom:10px;color:var(--blue);min-height:1.3em}
 .pcard ul{list-style:none}
 .pcard .caps{margin-top:14px;border-top:1px solid rgba(12,12,14,.08)}
-.pcard li{display:flex;gap:12px;align-items:center;font-size:15px;padding:9px 0;border-bottom:1px solid rgba(12,12,14,.08);color:#a6a5ab;transition:color .45s}
-.pcard li::before{content:"";width:7px;height:7px;border-radius:50%;background:#d6d5d0;flex:none;transition:background .45s}
+.pcard li{display:flex;gap:12px;align-items:center;font-size:15px;padding:9px 0;border-bottom:1px solid rgba(12,12,14,.08);color:var(--ink);opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s}
+.pcard li::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue);flex:none}
 .pcard li:last-child{border-bottom:0}
-.pcard li.on{color:var(--ink)}
-.pcard li.on::before{background:var(--blue)}
+.pcard li.on{opacity:1;transform:none}
 .dcopy{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,80px);margin-top:clamp(40px,5vw,72px)}
 .dcopy h3{font-weight:600;font-size:clamp(20px,1.7vw,26px);letter-spacing:-.025em;margin:12px 0 10px}
 .dcopy p{font-size:16px;line-height:1.5;color:#55555a;max-width:44ch}
@@ -497,9 +496,12 @@ let live=[];
 
 // ---------- how-it-works diagram ----------
 (()=>{
-// every service is always listed; the selected stage lights up the ones it uses
-const CAPS=['Launch strategy & execution','Influencer & creator strategy','Paid marketing','Organic content','Brand collaborations','Launch partnerships','Live activations','Digital experiences','Product development'];
-const D=[[0,1,2],[3,2,1],[4,5,1],[6,7,8]];
+// each area shows its own full set of services (they overlap, as the work does)
+const D=[
+ ['Launch strategy & execution','Brand & positioning strategy','Influencer & creator strategy','Partnership strategy','Paid media strategy','Product strategy'],
+ ['Organic content','Launch strategy & execution','Influencer & creator content','Paid marketing','Social & editorial','Content production'],
+ ['Brand collaborations','Launch partnerships','Athlete & creator partnerships','Influencer & creator strategy','Sponsorships','Co-branded products'],
+ ['Live activations','Digital experiences','Product development','Launch events','Fan experiences','Brand collaborations']];
 const root=document.getElementById('how'),st=root.querySelector('.stage2'),svg=root.querySelector('.wires'),ins=[...root.querySelectorAll('.goal')],hub=root.querySelector('.hub'),card=root.querySelector('.pk');
 const NS='http://www.w3.org/2000/svg';let paths=[],out=null,dots=[],cur=0,timer=null,t0=performance.now();
 function build(){
@@ -518,9 +520,9 @@ function build(){
   paths.forEach((p,i)=>p.classList.toggle('on',i===cur));
 }
 const OF=[...document.querySelectorAll('.offer')];
-const CUL=card.querySelector('.caps');CUL.innerHTML=CAPS.map(t=>`<li>${t.replace('&','&amp;')}</li>`).join('');const CL=[...CUL.children];
+const CUL=card.querySelector('.caps');
 function select(k){cur=k;ins.forEach((b,i)=>b.classList.toggle('on',i===k));paths.forEach((p,i)=>p.classList.toggle('on',i===k));
-  CL.forEach((li,i)=>li.classList.toggle('on',D[k].includes(i)));t0=performance.now()}
+  CUL.innerHTML=D[k].map(t=>`<li>${t.replace('&','&amp;')}</li>`).join('');[...CUL.children].forEach((li,i)=>setTimeout(()=>li.classList.add('on'),320+i*70));t0=performance.now()}
 function auto(){clearInterval(timer);timer=setInterval(()=>select((cur+1)%ins.length),3600)}
 ins.forEach((b,i)=>{b.addEventListener('mouseenter',()=>{select(i);auto()});b.addEventListener('click',()=>{select(i);auto()})});
 function tick(now){requestAnimationFrame(tick);if(!paths.length)return;const t=(now-t0)/1000;
