@@ -267,10 +267,10 @@ footer{display:flex;justify-content:space-between;padding:26px var(--pad);font-s
     <div class="stage2">
       <svg class="wires" aria-hidden="true"></svg>
       <div class="ins">
-        <button class="goal" data-k="0">Launch something new</button>
-        <button class="goal" data-k="1">Grow an audience</button>
-        <button class="goal" data-k="2">Own a big moment</button>
-        <button class="goal" data-k="3">Work with athletes &amp; creators</button>
+        <button class="goal" data-k="0">Content</button>
+        <button class="goal" data-k="1">Launches</button>
+        <button class="goal" data-k="2">Partnerships</button>
+        <button class="goal" data-k="3">Experiences</button>
       </div>
       <div class="hub"><span class="hs"><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg></span><b>NOISE</b><small>STUDIO</small></div>
       <div class="pk"><div class="sh s2"></div><div class="sh s1"></div>
@@ -347,9 +347,8 @@ st.style.width=st.style.height=(R*2)+'px';
 const t0=performance.now();let rot=0,phase=0,done=false,last=t0;
 function frame(now){if(done)return;requestAnimationFrame(frame);
   const t=(now-t0)/1000;
-  // rapid-fire 45° snaps that accelerate then settle: energetic, but every hold is dead still and razor sharp
-  {const S=[.12,.34,.52,.66,.78,.89,1.0,1.12,1.27,1.47,1.74],Dn=[.17,.15,.12,.1,.09,.09,.09,.1,.13,.17,.24];let r=0;
-   for(let i=0;i<S.length;i++){const f=cl((t-S[i])/Dn[i],0,1);r+=1-Math.pow(1-f,4)}rot=r*Math.PI/4}
+  // smooth spin, fast then easing to a stop; real-time so it's identical at 60/120Hz, vector-drawn so the points stay sharp
+  {const dt=Math.min(.05,(now-last)/1000);last=now;const spin=t<1.9?(11*Math.pow(1-cl(t/1.9,0,1),2)+.3):0;rot+=spin*dt}
   cnt.textContent=String(Math.min(100,Math.floor(cl(t/1.9,0,1)*100))).padStart(3,'0');
   x.setTransform(D,0,0,D,0,0);x.clearRect(0,0,W,H);
   const co=Math.cos(rot),si=Math.sin(rot),fade=0;
@@ -494,12 +493,12 @@ let live=[];
 
 // ---------- how-it-works diagram ----------
 (()=>{
-// four broad goals; each opens the full set of services it draws on
+// four practice areas, each with the services inside it
 const D=[
- ['Launch strategy & execution','Product development','Launch partnerships','Creative direction','Paid media'],
- ['Organic content','Social strategy','Creator & influencer strategy','Paid media','Community building'],
- ['Live activations','Digital experiences','Brand collaborations','Event production','Content capture & rollout'],
- ['Creator & influencer strategy','Athlete partnerships','Brand collaborations','Ambassador programs','Co-branded products']];
+ ['Organic content','Paid marketing','Influencer & creator strategy'],
+ ['Launch strategy & execution','Product development','Launch partnerships'],
+ ['Brand collaborations','Influencer & creator strategy','Launch partnerships'],
+ ['Live activations','Digital experiences','Brand collaborations']];
 const root=document.getElementById('how'),st=root.querySelector('.stage2'),svg=root.querySelector('.wires'),ins=[...root.querySelectorAll('.goal')],hub=root.querySelector('.hub'),card=root.querySelector('.pk');
 const NS='http://www.w3.org/2000/svg';let paths=[],out=null,dots=[],cur=0,timer=null,t0=performance.now();
 function build(){
