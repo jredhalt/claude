@@ -412,9 +412,10 @@ const mk=(o)=>{const [tx,ty]=randStarPoint();return{...o,tx,ty,st:Math.random()*
 const parts=body.map(([nx,ny])=>{const loose=nx<.6&&ny<.72&&Math.random()<.2;return mk({nx,ny,s:2.6+Math.random()*3.4+(loose?1.6:0),loose,delay:.35+(.89-nx)*.8+Math.random()*.35,sx:-.5-Math.random()*.7,sy:ny+(Math.random()-.5)*.5,ph:Math.random(),sp:.12+Math.random()*.18})});
 const star=starParticles(STAR_R,.0058).map(p=>({...p,dx:0,dy:0,st:Math.random()*.2,delay:.38+Math.random()*.35,sx:-.5-Math.random()*.7,sy:.1+Math.random()*.5}));
 function size(){const r=c.getBoundingClientRect();W=r.width;H=r.height;D=Math.min(devicePixelRatio||1,2);c.width=W*D;c.height=H*D;
-  const mob=W<820,h=mob?Math.min(H*.62,W*1.15):Math.min(H*.72,W*.62);
-  // centre the figure (body + star) horizontally; feet bleed off the bottom edge
-  const top=document.querySelector('.hcopy').getBoundingClientRect().bottom-c.getBoundingClientRect().top;A={h,x:W/2-h*.5,y:mob?top+H*.06:Math.max(top+H*.02,H-h*.86)};
+  const mob=W<820;
+  // whole figure visible on load: fit between the headline and the bottom of the screen
+  const top=document.querySelector('.hcopy').getBoundingClientRect().bottom-c.getBoundingClientRect().top,gapT=mob?H*.05:H*.035,gapB=mob?28:Math.max(28,H*.04);
+  const h=Math.max(160,Math.min(mob?W*1.15:W*.62,H-top-gapT-gapB));A={h,x:W/2-h*.5,y:top+gapT};
   B={x:W*(mob?.2:.3),y:H*(mob?.27:.5),R:Math.min(W,H)*(mob?.52:.5)}}
 size();addEventListener('resize',size);
 hero.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
