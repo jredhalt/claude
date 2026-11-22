@@ -30,9 +30,9 @@ a{color:inherit;text-decoration:none}
 /* intro */
 #intro{position:fixed;inset:0;z-index:200;background:var(--blue);clip-path:inset(0 0 0 0);transition:clip-path 1s cubic-bezier(.76,0,.24,1)}
 #intro.lift{clip-path:inset(0 0 100% 0)}
-#iword{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:clamp(76px,15vw,230px);letter-spacing:-.05em;line-height:1;padding-right:.56em}
-#iword .il{display:inline-block;overflow:hidden;text-align:center;padding:.06em 0}
-#iword .il>span{display:block;transform:translateY(105%)}
+#iword{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:clamp(76px,15vw,230px);letter-spacing:-.05em;line-height:1.1}
+#iword .il{display:inline-block;text-align:center}
+#iword .il>span{display:block;opacity:0}
 #introc{position:absolute;inset:0;width:100%;height:100%}
 #introStar{position:fixed;left:0;top:0;width:10px;height:10px;color:#fff;z-index:201;opacity:0;transform-origin:50% 50%}
 .ilab{position:absolute;left:var(--pad);right:var(--pad);bottom:28px;display:flex;justify-content:space-between;color:rgba(255,255,255,.75);font-size:12px;font-weight:500;letter-spacing:.08em;font-variant-numeric:tabular-nums;transition:opacity .3s}
@@ -282,10 +282,10 @@ h1.hh-d{display:none}
     <div class="stage2">
       <svg class="wires" aria-hidden="true"></svg>
       <div class="ins">
-        <button class="goal" data-k="0">Build</button>
-        <button class="goal" data-k="1">Launch</button>
-        <button class="goal" data-k="2">Grow</button>
-        <button class="goal" data-k="3">Activate</button>
+        <button class="goal" data-k="0">Strategy</button>
+        <button class="goal" data-k="1">Content</button>
+        <button class="goal" data-k="2">Partnerships</button>
+        <button class="goal" data-k="3">Experiences</button>
       </div>
       <div class="hub"><span class="hs"><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg></span><b>NOISE</b><small>STUDIO</small></div>
       <div class="pk"><div class="sh s2"></div><div class="sh s1"></div>
@@ -346,7 +346,7 @@ h1.hh-d{display:none}
 // ---------- intro: N-O-I-S-E spells itself out, the mark lands after the E, then flies to its place ----------
 (()=>{
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-window.INTRO_MS=reduce?0:2950;
+window.INTRO_MS=reduce?0:4300;
 const ov=document.getElementById('intro');
 if(reduce){ov.remove();document.body.classList.remove('intro-on');return}
 const st=document.getElementById('introStar'),cnt=document.getElementById('icount'),word=document.getElementById('iword');
@@ -355,25 +355,26 @@ const EZ='cubic-bezier(.22,1,.36,1)',EIO='cubic-bezier(.76,0,.24,1)';
 function start(){
   // lock each slot to its final glyph width so the scramble never shifts the word
   L.forEach(e=>{e.style.width=e.getBoundingClientRect().width+'px'});
-  const t0=performance.now();
-  (function count(){const k=Math.min(1,(performance.now()-t0)/1900);cnt.textContent=String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
-  inner.forEach((el,i)=>{const at=120+i*135;
-    setTimeout(()=>{el.animate([{transform:'translateY(105%)'},{transform:'none'}],{duration:520,easing:EZ,fill:'forwards'});
-      let n=0;const iv=setInterval(()=>{if(++n>4){clearInterval(iv);el.textContent=FINAL[i];return}el.textContent=POOL[Math.floor(Math.random()*POOL.length)]},48)},at)});
-  // the mark lands just after the E
-  setTimeout(()=>{const e=L[4].getBoundingClientRect(),sz=e.height*.66,x0=e.right+sz*.16,y0=e.top+(e.height-sz)/2+e.height*.02;
+  const t0=performance.now(),STEP=210,SCR=62,HOLD=650;
+  (function count(){const k=Math.min(1,(performance.now()-t0)/3000);cnt.textContent=String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
+  inner.forEach((el,i)=>{setTimeout(()=>{el.animate([{opacity:0,transform:'translateY(18%)'},{opacity:1,transform:'none'}],{duration:420,easing:EZ,fill:'forwards'});
+      let n=0;const iv=setInterval(()=>{if(++n>4){clearInterval(iv);el.textContent=FINAL[i];return}el.textContent=POOL[Math.floor(Math.random()*POOL.length)]},SCR)},150+i*STEP)});
+  const locked=150+4*STEP+5*SCR+40,out=locked+HOLD;
+  // the word leaves first
+  setTimeout(()=>inner.forEach((el,i)=>el.animate([{opacity:1,transform:'none'},{opacity:0,transform:'translateY(-22%)'}],{duration:480,delay:i*70,easing:EIO,fill:'forwards'})),out);
+  // then the mark arrives on its own, centre stage
+  setTimeout(()=>{const sz=Math.min(innerWidth,innerHeight)*(innerWidth<820?.26:.2),x0=(innerWidth-sz)/2,y0=(innerHeight-sz)/2;
     st.style.width=st.style.height=sz+'px';st.style.left=x0+'px';st.style.top=y0+'px';st.style.opacity=1;
-    st.animate([{transform:'scale(0) rotate(-135deg)'},{transform:'scale(1.08) rotate(8deg)',offset:.7},{transform:'none'}],{duration:620,easing:EZ,fill:'forwards'});
-    setTimeout(()=>fly(sz,x0,y0),980)},120+5*135+260);
+    st.animate([{transform:'scale(0) rotate(-180deg)'},{transform:'scale(1.06) rotate(10deg)',offset:.72},{transform:'none'}],{duration:760,easing:EZ,fill:'forwards'});
+    setTimeout(()=>fly(sz,x0,y0),760+260)},out+4*70+480+60);
 }
 function fly(sz,x0,y0){
   const tg=document.querySelector('.brand svg').getBoundingClientRect(),s=tg.width/sz,dx=tg.left+tg.width/2-(x0+sz/2),dy=tg.top+tg.height/2-(y0+sz/2);
   ov.querySelector('.ilab').style.opacity=0;
-  inner.forEach((el,i)=>el.animate([{transform:'none'},{transform:'translateY(-110%)'}],{duration:620,delay:i*45,easing:EIO,fill:'forwards'}));
-  st.animate([{transform:'none',color:'#fff'},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,color:'#0A14FF'}],{duration:1000,easing:EIO,fill:'forwards'});
-  setTimeout(()=>ov.classList.add('lift'),220);
-  setTimeout(()=>document.body.classList.remove('intro-on'),1000);
-  setTimeout(()=>{ov.remove();st.remove()},1250);
+  st.animate([{transform:'none',color:'#fff'},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,color:'#0A14FF'}],{duration:1050,easing:EIO,fill:'forwards'});
+  setTimeout(()=>ov.classList.add('lift'),200);
+  setTimeout(()=>document.body.classList.remove('intro-on'),1050);
+  setTimeout(()=>{ov.remove();st.remove()},1300);
 }
 ov.addEventListener('click',()=>{window.INTRO_MS=0;ov.classList.add('lift');document.body.classList.remove('intro-on');setTimeout(()=>{ov.remove();st.remove()},900)},{once:true});
 (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>requestAnimationFrame(start));
@@ -497,8 +498,8 @@ let live=[];
 // ---------- how-it-works diagram ----------
 (()=>{
 // every service is always listed; the selected stage lights up the ones it uses
-const CAPS=['Product development','Digital experiences','Brand collaborations','Launch strategy & execution','Launch partnerships','Paid marketing','Organic content','Influencer & creator strategy','Live activations'];
-const D=[[0,1,2],[3,4,5],[6,7,5],[8,2,1]];
+const CAPS=['Launch strategy & execution','Influencer & creator strategy','Paid marketing','Organic content','Brand collaborations','Launch partnerships','Live activations','Digital experiences','Product development'];
+const D=[[0,1,2],[3,2,1],[4,5,1],[6,7,8]];
 const root=document.getElementById('how'),st=root.querySelector('.stage2'),svg=root.querySelector('.wires'),ins=[...root.querySelectorAll('.goal')],hub=root.querySelector('.hub'),card=root.querySelector('.pk');
 const NS='http://www.w3.org/2000/svg';let paths=[],out=null,dots=[],cur=0,timer=null,t0=performance.now();
 function build(){
