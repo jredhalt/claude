@@ -399,14 +399,12 @@ const SPR={};function sprite(col){if(SPR[col])return SPR[col];const c=document.c
 const SP1=starPts(1,.42);
 function inStar(x,y,k=1){let c=false;for(let i=0,j=15;i<16;j=i++){const xi=SP1[i][0]*k,yi=SP1[i][1]*k,xj=SP1[j][0]*k,yj=SP1[j][1]*k;if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c}
 function starParticles(R,spacing){const out=[];
-  // fill: near-regular grid, light jitter, kept a little inside the outline
-  for(let y=-R;y<=R;y+=spacing)for(let x=-R;x<=R;x+=spacing){const jx=x+(Math.random()-.5)*spacing*.35,jy=y+(Math.random()-.5)*spacing*.35;
-    if(inStar(jx/R,jy/R,.97))out.push({ux:jx,uy:jy,s:2.8+Math.random()*2.6,ph:Math.random()})}
-  // outline: points traced along every edge so the silhouette and tips stay sharp
-  for(let i=0;i<16;i++){const [x1,y1]=SP1[i],[x2,y2]=SP1[(i+1)%16],len=Math.hypot(x2-x1,y2-y1)*R,n=Math.max(2,Math.round(len/(spacing*.8)));
-    for(let k=0;k<n;k++){const t=k/n;out.push({ux:(x1+(x2-x1)*t)*R,uy:(y1+(y2-y1)*t)*R,s:2.6+Math.random()*1.2,ph:Math.random()})}}
+  // loose, fragmented fill (varied sizes, real scatter) clipped to the exact mark so the points read long and true
+  for(let y=-R;y<=R;y+=spacing)for(let x=-R;x<=R;x+=spacing){const jx=x+(Math.random()-.5)*spacing*.9,jy=y+(Math.random()-.5)*spacing*.9;
+    if(inStar(jx/R,jy/R)&&Math.random()<.9)out.push({ux:jx,uy:jy,s:2.6+Math.random()*3.2,ph:Math.random()})
+    else if(inStar(jx/R,jy/R,1.12)&&Math.random()<.12)out.push({ux:jx,uy:jy,s:1.8+Math.random()*2,ph:Math.random()})}
   return out}
-function randStarPoint(){if(Math.random()<.22){const i=Math.floor(Math.random()*16),[x1,y1]=SP1[i],[x2,y2]=SP1[(i+1)%16],t=Math.random();return[x1+(x2-x1)*t,y1+(y2-y1)*t]}
+function randStarPoint(){
   for(;;){const x=Math.random()*2-1,y=Math.random()*2-1;if(inStar(x,y))return[x,y]}}
 const easeIO=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
 
@@ -419,7 +417,7 @@ let W,H,D,A,B,mx=-999,my=-999,t0=performance.now()+(window.INTRO_MS||0);
 const body=ATH.filter(([nx,ny])=>{const d=Math.hypot(nx-BALL.x,ny-(BALL.y-.02));if(d>STAR_R*1.02)return true;return nx<BALL.x-.04&&ny>BALL.y+.06});
 const mk=(o)=>{const [tx,ty]=randStarPoint();return{...o,tx,ty,st:Math.random()*.35,dx:0,dy:0}};
 const parts=body.map(([nx,ny])=>{const loose=nx<.6&&ny<.72&&Math.random()<.2;return mk({nx,ny,s:2.6+Math.random()*3.4+(loose?1.6:0),loose,delay:.35+(.89-nx)*.8+Math.random()*.35,sx:-.5-Math.random()*.7,sy:ny+(Math.random()-.5)*.5,ph:Math.random(),sp:.12+Math.random()*.18})});
-const star=starParticles(STAR_R,.0074).map(p=>({...p,dx:0,dy:0,st:Math.random()*.2,delay:1.1+Math.hypot(p.ux,p.uy)/STAR_R*.6+Math.random()*.2}));
+const star=starParticles(STAR_R,.006).map(p=>({...p,dx:0,dy:0,st:Math.random()*.2,delay:1.1+Math.hypot(p.ux,p.uy)/STAR_R*.6+Math.random()*.2}));
 function size(){const r=c.getBoundingClientRect();W=r.width;H=r.height;D=Math.min(devicePixelRatio||1,2);c.width=W*D;c.height=H*D;
   const mob=W<820,h=mob?Math.min(H*.62,W*1.15):Math.min(H*.72,W*.62);
   // centre the figure (body + star) horizontally; feet bleed off the bottom edge
