@@ -396,7 +396,7 @@ h1.hh-m{display:none}
 // ---------- intro: N-O-I-S-E spells itself out, the mark lands after the E, then flies to its place ----------
 (()=>{
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-window.INTRO_MS=reduce?0:4300;
+window.INTRO_MS=reduce?0:3550;
 const ov=document.getElementById('intro');
 if(reduce){ov.remove();document.body.classList.remove('intro-on');return}
 const st=document.getElementById('introStar'),cnt=document.getElementById('icount'),word=document.getElementById('iword');
@@ -405,18 +405,18 @@ const EZ='cubic-bezier(.22,1,.36,1)',EIO='cubic-bezier(.76,0,.24,1)';
 function start(){
   // lock each slot to its final glyph width so the scramble never shifts the word
   L.forEach(e=>{e.style.width=e.getBoundingClientRect().width+'px'});
-  const t0=performance.now(),STEP=210,SCR=62,HOLD=650;
+  const t0=performance.now(),STEP=210,SCR=62,HOLD=140;
   (function count(){const k=Math.min(1,(performance.now()-t0)/3000);cnt.textContent=String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
   inner.forEach((el,i)=>{setTimeout(()=>{el.animate([{opacity:0,transform:'translateY(18%)'},{opacity:1,transform:'none'}],{duration:420,easing:EZ,fill:'forwards'});
       let n=0;const iv=setInterval(()=>{if(++n>4){clearInterval(iv);el.textContent=FINAL[i];return}el.textContent=POOL[Math.floor(Math.random()*POOL.length)]},SCR)},150+i*STEP)});
   const locked=150+4*STEP+5*SCR+40,out=locked+HOLD;
   // the word leaves first
-  setTimeout(()=>inner.forEach((el,i)=>el.animate([{opacity:1,transform:'none'},{opacity:0,transform:'translateY(-22%)'}],{duration:480,delay:i*70,easing:EIO,fill:'forwards'})),out);
+  setTimeout(()=>inner.forEach((el,i)=>el.animate([{opacity:1,transform:'none'},{opacity:0,transform:'translateY(-22%)'}],{duration:360,delay:i*40,easing:EIO,fill:'forwards'})),out);
   // then the mark arrives on its own, centre stage
   setTimeout(()=>{const sz=Math.min(innerWidth,innerHeight)*(innerWidth<820?.26:.2),x0=(innerWidth-sz)/2,y0=(innerHeight-sz)/2;
     st.style.width=st.style.height=sz+'px';st.style.left=x0+'px';st.style.top=y0+'px';st.style.opacity=1;
     st.animate([{transform:'scale(0) rotate(-180deg)'},{transform:'scale(1.06) rotate(10deg)',offset:.72},{transform:'none'}],{duration:760,easing:EZ,fill:'forwards'});
-    setTimeout(()=>fly(sz,x0,y0),760+260)},out+4*70+480+60);
+    setTimeout(()=>fly(sz,x0,y0),760+220)},out+260);
 }
 function fly(sz,x0,y0){
   const tg=document.querySelector('.brand svg').getBoundingClientRect(),s=tg.width/sz,dx=tg.left+tg.width/2-(x0+sz/2),dy=tg.top+tg.height/2-(y0+sz/2);
