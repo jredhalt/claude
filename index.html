@@ -347,9 +347,8 @@ st.style.width=st.style.height=(R*2)+'px';
 const t0=performance.now();let rot=0,phase=0,done=false,last=t0;
 function frame(now){if(done)return;requestAnimationFrame(frame);
   const t=(now-t0)/1000;
-  // spin: fast while gathering, easing to a stop
-  // real-time spin (same speed at 60/120Hz), peak ~0.9 turns/s so the points always read crisp
-  const dt=Math.min(.05,(now-last)/1000);last=now;const spin=t<1.9?(5.6*Math.pow(1-cl(t/1.9,0,1),2)+.25):0;rot+=spin*dt;
+  // four precise 45° ticks with dead-still holds: the points never smear
+  {const I=.42,Dn=.26;let r=0;for(let i=0;i<4;i++){const f=cl((t-.2-i*I)/Dn,0,1);r+=f<.5?16*f**5:1-Math.pow(-2*f+2,5)/2}rot=r*Math.PI/4}
   cnt.textContent=String(Math.min(100,Math.floor(cl(t/1.9,0,1)*100))).padStart(3,'0');
   x.setTransform(D,0,0,D,0,0);x.clearRect(0,0,W,H);
   const co=Math.cos(rot),si=Math.sin(rot),fade=0;
@@ -411,7 +410,7 @@ let W,H,D,A,B,mx=-999,my=-999,t0=performance.now()+(window.INTRO_MS||0);
 const body=ATH.filter(([nx,ny])=>{const d=Math.hypot(nx-BALL.x,ny-(BALL.y-.02));if(d>STAR_R*1.02)return true;return nx<BALL.x-.04&&ny>BALL.y+.06});
 const mk=(o)=>{const [tx,ty]=randStarPoint();return{...o,tx,ty,st:Math.random()*.35,dx:0,dy:0}};
 const parts=body.map(([nx,ny])=>{const loose=nx<.6&&ny<.72&&Math.random()<.2;return mk({nx,ny,s:2.6+Math.random()*3.4+(loose?1.6:0),loose,delay:.35+(.89-nx)*.8+Math.random()*.35,sx:-.5-Math.random()*.7,sy:ny+(Math.random()-.5)*.5,ph:Math.random(),sp:.12+Math.random()*.18})});
-const star=starParticles(STAR_R,.0058).map(p=>({...p,dx:0,dy:0,st:Math.random()*.2,delay:1.1+Math.hypot(p.ux,p.uy)/STAR_R*.6+Math.random()*.2}));
+const star=starParticles(STAR_R,.0058).map(p=>({...p,dx:0,dy:0,st:Math.random()*.2,delay:.38+Math.random()*.35,sx:-.5-Math.random()*.7,sy:.1+Math.random()*.5}));
 function size(){const r=c.getBoundingClientRect();W=r.width;H=r.height;D=Math.min(devicePixelRatio||1,2);c.width=W*D;c.height=H*D;
   const mob=W<820,h=mob?Math.min(H*.62,W*1.15):Math.min(H*.72,W*.62);
   // centre the figure (body + star) horizontally; feet bleed off the bottom edge
@@ -442,12 +441,13 @@ function draw(now){requestAnimationFrame(draw);
     push(p,px,py);const z=p.s*(.4+.6*k)*k0*(1+m*.2);x.globalAlpha=a*(.3+.7*k)*(1-m*.86);x.drawImage(spr,px+p.dx-z/2,py+p.dy-z/2,z,z);
   }
   const cx=A.x+BALL.x*sc,cy=A.y+(BALL.y-.02)*sc,rot=T*.12,br=1+.03*Math.sin(T*1.4),co=Math.cos(rot),si=Math.sin(rot);
-  for(const p of star){const k=ease(clamp((T-p.delay)/.9,0,1));if(k<=0)continue;
+  for(const p of star){const k=ease(clamp((T-p.delay)/1.1,0,1));
     const m=easeIO(clamp((P-.04-p.st)/.5,0,1));
-    const ux=(p.ux*co-p.uy*si)*sc*br*k,uy=(p.ux*si+p.uy*co)*sc*br*k;
+    const hx=cx+(p.ux*co-p.uy*si)*sc*br,hy=cy+(p.ux*si+p.uy*co)*sc*br,ox=A.x+p.sx*sc,oy=A.y+p.sy*sc;
+    const qx=ox+(hx-ox)*k,qy=oy+(hy-oy)*k;
     const bx=B.x+(p.ux*cb-p.uy*sb)/STAR_R*B.R,by=B.y+(p.ux*sb+p.uy*cb)/STAR_R*B.R;
-    const px=cx+ux+(bx-cx-ux)*m,py=cy+uy+(by-cy-uy)*m;push(p,px,py);
-    const z=p.s*k0*(.9+.15*Math.sin(T*3+p.ph*20))*(1+m*.2);x.globalAlpha=k*(1-m*.86);x.drawImage(spr,px+p.dx-z/2,py+p.dy-z/2,z,z)}
+    const px=qx+(bx-qx)*m,py=qy+(by-qy)*m;push(p,px,py);
+    const z=p.s*k0*(.4+.6*k)*(.9+.15*Math.sin(T*3+p.ph*20))*(1+m*.2);x.globalAlpha=(.3+.7*k)*(1-m*.86);x.drawImage(spr,px+p.dx-z/2,py+p.dy-z/2,z,z)}
   x.globalAlpha=1;
 }
 requestAnimationFrame(draw);
