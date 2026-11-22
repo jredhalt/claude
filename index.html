@@ -31,7 +31,7 @@ a{color:inherit;text-decoration:none}
 #intro{position:fixed;inset:0;z-index:200;background:var(--blue);clip-path:inset(0 0 0 0);transition:clip-path 1s cubic-bezier(.76,0,.24,1)}
 #intro.lift{clip-path:inset(0 0 100% 0)}
 #introc{position:absolute;inset:0;width:100%;height:100%}
-#introStar{position:fixed;left:0;top:0;width:10px;height:10px;color:#fff;z-index:201;opacity:0;will-change:transform;transform-origin:50% 50%}
+#introStar{position:fixed;left:0;top:0;width:10px;height:10px;color:#fff;z-index:201;opacity:0;transform-origin:50% 50%}
 .ilab{position:absolute;left:var(--pad);right:var(--pad);bottom:28px;display:flex;justify-content:space-between;color:rgba(255,255,255,.75);font-size:12px;font-weight:500;letter-spacing:.08em;font-variant-numeric:tabular-nums;transition:opacity .3s}
 body.intro-on{overflow:hidden}
 body.intro-on .brand svg{opacity:0}
@@ -358,20 +358,26 @@ function frame(now){if(done)return;requestAnimationFrame(frame);
     const px=p.sx+(cx+(p.tx*co-p.ty*si)*R-p.sx)*k+jx,py=p.sy+(cy+(p.tx*si+p.ty*co)*R-p.sy)*k+jy;
     const z=p.s*(1.25-k*.4);x.globalAlpha=(.35+.65*k)*fade;x.drawImage(spr,px-z/2,py-z/2,z,z);
   }
-  if(phase===0){phase=1;st.style.opacity=1}
+  if(phase===0)phase=1;
   const pulse=eio(cl(t/.7,0,1))*(1+.06*Math.sin(cl((t-1.5)/.5,0,1)*Math.PI));
-  if(phase===1){st.style.transform=`translate(${cx-R}px,${cy-R}px) rotate(${rot}rad) scale(${pulse})`}
+  // drawn as exact vector geometry every frame: tips stay razor sharp at any speed
+  if(phase===1&&pulse>0){const r=R*pulse;x.save();x.translate(cx,cy);x.rotate(rot);x.fillStyle='#fff';x.beginPath();
+    for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,rr=i%2?r*.42:r;i?x.lineTo(Math.cos(a)*rr,Math.sin(a)*rr):x.moveTo(Math.cos(a)*rr,Math.sin(a)*rr)}
+    x.closePath();x.fill();x.restore()}
   if(t>=2.2&&phase===1){phase=2;fly()}
 }
 function fly(){
   const tgt=document.querySelector('.brand svg').getBoundingClientRect();
   const s=tgt.width/(R*2),tx=tgt.left+tgt.width/2-R,ty=tgt.top+tgt.height/2-R;
   ov.querySelector('.ilab').style.opacity=0;
+  // hand off from canvas to the svg at the exact same pose, then fly
+  st.style.transition='none';st.style.transform=`translate(${cx-R}px,${cy-R}px) rotate(${rot}rad)`;st.style.opacity=1;
+  x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,cv.width,cv.height);done=true;st.getBoundingClientRect();
   st.style.transition='transform .95s cubic-bezier(.76,0,.24,1), color .5s .3s';
   const turns=Math.round(rot/(Math.PI/4))*(Math.PI/4)+Math.PI*2;
   requestAnimationFrame(()=>{st.style.transform=`translate(${tx}px,${ty}px) rotate(${turns}rad) scale(${s})`;st.style.color='#0A14FF';ov.classList.add('lift')});
   setTimeout(()=>{document.body.classList.remove('intro-on')},900);
-  setTimeout(()=>{done=true;ov.remove();st.remove()},1100);
+  setTimeout(()=>{ov.remove();st.remove()},1100);
 }
 ov.addEventListener('click',()=>{if(phase<2){phase=2;st.style.opacity=1;st.style.transform=`translate(${cx-R}px,${cy-R}px) rotate(${rot}rad)`;fly()}});
 requestAnimationFrame(frame);
@@ -390,9 +396,18 @@ const ATH=[[0.2526,0.0],[0.2619,0.0003],[0.2545,0.0063],[0.2602,0.0101],[0.2701,
 // hero: the athlete reaches in from the left, toward the mark on the right
 const BALL={x:.815,y:.226,r:.085},STAR_R=.135;
 const SPR={};function sprite(col){if(SPR[col])return SPR[col];const c=document.createElement('canvas');c.width=c.height=40;const g=c.getContext('2d');g.translate(20,20);g.beginPath();for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=i%2?7.5:19;i?g.lineTo(Math.cos(a)*r,Math.sin(a)*r):g.moveTo(Math.cos(a)*r,Math.sin(a)*r)}g.closePath();g.fillStyle=col;g.fill();return SPR[col]=c}
-function starParticles(R,spacing){const out=[];for(let y=-R;y<=R;y+=spacing)for(let x=-R;x<=R;x+=spacing){const jx=x+(Math.random()-.5)*spacing*.9,jy=y+(Math.random()-.5)*spacing*.9,d=Math.hypot(jx,jy);
-  if(d<=starEdge(Math.atan2(jy,jx),R,R*.42))out.push({ux:jx,uy:jy,s:2.6+Math.random()*3.2,ph:Math.random()})}return out}
-function randStarPoint(){for(;;){const x=Math.random()*2-1,y=Math.random()*2-1,d=Math.hypot(x,y);if(d<=starEdge(Math.atan2(y,x),1,.42))return[x,y]}}
+const SP1=starPts(1,.42);
+function inStar(x,y,k=1){let c=false;for(let i=0,j=15;i<16;j=i++){const xi=SP1[i][0]*k,yi=SP1[i][1]*k,xj=SP1[j][0]*k,yj=SP1[j][1]*k;if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c}
+function starParticles(R,spacing){const out=[];
+  // fill: near-regular grid, light jitter, kept a little inside the outline
+  for(let y=-R;y<=R;y+=spacing)for(let x=-R;x<=R;x+=spacing){const jx=x+(Math.random()-.5)*spacing*.35,jy=y+(Math.random()-.5)*spacing*.35;
+    if(inStar(jx/R,jy/R,.97))out.push({ux:jx,uy:jy,s:2.8+Math.random()*2.6,ph:Math.random()})}
+  // outline: points traced along every edge so the silhouette and tips stay sharp
+  for(let i=0;i<16;i++){const [x1,y1]=SP1[i],[x2,y2]=SP1[(i+1)%16],len=Math.hypot(x2-x1,y2-y1)*R,n=Math.max(2,Math.round(len/(spacing*.8)));
+    for(let k=0;k<n;k++){const t=k/n;out.push({ux:(x1+(x2-x1)*t)*R,uy:(y1+(y2-y1)*t)*R,s:2.6+Math.random()*1.2,ph:Math.random()})}}
+  return out}
+function randStarPoint(){if(Math.random()<.22){const i=Math.floor(Math.random()*16),[x1,y1]=SP1[i],[x2,y2]=SP1[(i+1)%16],t=Math.random();return[x1+(x2-x1)*t,y1+(y2-y1)*t]}
+  for(;;){const x=Math.random()*2-1,y=Math.random()*2-1;if(inStar(x,y))return[x,y]}}
 const easeIO=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
 
 // hero: the athlete, centre stage, holding the mark. Scroll and he dissolves into it.
@@ -404,7 +419,7 @@ let W,H,D,A,B,mx=-999,my=-999,t0=performance.now()+(window.INTRO_MS||0);
 const body=ATH.filter(([nx,ny])=>{const d=Math.hypot(nx-BALL.x,ny-(BALL.y-.02));if(d>STAR_R*1.02)return true;return nx<BALL.x-.04&&ny>BALL.y+.06});
 const mk=(o)=>{const [tx,ty]=randStarPoint();return{...o,tx,ty,st:Math.random()*.35,dx:0,dy:0}};
 const parts=body.map(([nx,ny])=>{const loose=nx<.6&&ny<.72&&Math.random()<.2;return mk({nx,ny,s:2.6+Math.random()*3.4+(loose?1.6:0),loose,delay:.35+(.89-nx)*.8+Math.random()*.35,sx:-.5-Math.random()*.7,sy:ny+(Math.random()-.5)*.5,ph:Math.random(),sp:.12+Math.random()*.18})});
-const star=starParticles(STAR_R,.0058).map(p=>({...p,dx:0,dy:0,st:Math.random()*.2,delay:1.1+Math.hypot(p.ux,p.uy)/STAR_R*.6+Math.random()*.2}));
+const star=starParticles(STAR_R,.0074).map(p=>({...p,dx:0,dy:0,st:Math.random()*.2,delay:1.1+Math.hypot(p.ux,p.uy)/STAR_R*.6+Math.random()*.2}));
 function size(){const r=c.getBoundingClientRect();W=r.width;H=r.height;D=Math.min(devicePixelRatio||1,2);c.width=W*D;c.height=H*D;
   const mob=W<820,h=mob?Math.min(H*.62,W*1.15):Math.min(H*.72,W*.62);
   // centre the figure (body + star) horizontally; feet bleed off the bottom edge
@@ -434,12 +449,13 @@ function draw(now){requestAnimationFrame(draw);
       const lift=Math.sin(m*Math.PI)*H*.12*(p.ph-.5);px+=(tx-px)*m;py+=(ty-py)*m-lift;a=Math.max(a,m)}
     push(p,px,py);const z=p.s*(.4+.6*k)*k0*(1+m*.2);x.globalAlpha=a*(.3+.7*k)*(1-m*.86);x.drawImage(spr,px+p.dx-z/2,py+p.dy-z/2,z,z);
   }
-  // the mark itself: solid, exact brand geometry, no particles
-  {const cx=A.x+BALL.x*sc,cy=A.y+(BALL.y-.02)*sc,g=ease(clamp((T-1.05)/.9,0,1));
-   if(g>0){const m=easeIO(clamp((P-.04)/.5,0,1)),r0=STAR_R*sc*(W<820?.8:.9),R=r0+(B.R*.98-r0)*m,
-     X=cx+(B.x-cx)*m,Y=cy+(B.y-cy)*m,rot=T*.12*(1-m)+rotB*m,a=g*(1-m);
-     if(a>.005){x.save();x.translate(X,Y);x.rotate(rot);x.scale(g,g);x.globalAlpha=a;x.fillStyle='#0A14FF';x.beginPath();
-       starPts(R,R*.42).forEach(([u,v],j)=>j?x.lineTo(u,v):x.moveTo(u,v));x.closePath();x.fill();x.restore()}}}
+  const cx=A.x+BALL.x*sc,cy=A.y+(BALL.y-.02)*sc,rot=T*.12,br=(W<820?.86:1)*(1+.03*Math.sin(T*1.4)),co=Math.cos(rot),si=Math.sin(rot);
+  for(const p of star){const k=ease(clamp((T-p.delay)/.9,0,1));if(k<=0)continue;
+    const m=easeIO(clamp((P-.04-p.st)/.5,0,1));
+    const ux=(p.ux*co-p.uy*si)*sc*br*k,uy=(p.ux*si+p.uy*co)*sc*br*k;
+    const bx=B.x+(p.ux*cb-p.uy*sb)/STAR_R*B.R,by=B.y+(p.ux*sb+p.uy*cb)/STAR_R*B.R;
+    const px=cx+ux+(bx-cx-ux)*m,py=cy+uy+(by-cy-uy)*m;push(p,px,py);
+    const z=p.s*k0*(.9+.15*Math.sin(T*3+p.ph*20))*(1+m*.2);x.globalAlpha=k*(1-m*.86);x.drawImage(spr,px+p.dx-z/2,py+p.dy-z/2,z,z)}
   x.globalAlpha=1;
 }
 requestAnimationFrame(draw);
