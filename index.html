@@ -403,9 +403,11 @@ const hcopy=document.querySelector('.hcopy'),fade=[...document.querySelectorAll(
 let W,H,D,A,B,mx=-999,my=-999,t0=performance.now()+(window.INTRO_MS||0);
 // clear everything inside the star's sweep (leftover ball edge), but keep the wrist/hand coming in from lower-left
 const body=ATH.filter(([nx,ny])=>{const d=Math.hypot(nx-BALL.x,ny-(BALL.y-.02));if(d>STAR_R*1.02)return true;return nx<BALL.x-.04&&ny>BALL.y+.06});
-const mk=(o)=>{const [tx,ty]=randStarPoint();return{...o,tx,ty,st:Math.random()*.35,dx:0,dy:0}};
+// section-2 star: loose, dissolving edges rather than a crisp outline
+const loosen=([x,y])=>{const r=Math.random(),k=r<.3?1+Math.random()*.32:1-Math.random()*.06,j=.05;return[x*k+(Math.random()-.5)*j,y*k+(Math.random()-.5)*j]};
+const mk=(o)=>{const [tx,ty]=loosen(randStarPoint());return{...o,tx,ty,st:Math.random()*.35,dx:0,dy:0}};
 const parts=body.map(([nx,ny])=>{const loose=nx<.6&&ny<.72&&Math.random()<.2;return mk({nx,ny,s:2.6+Math.random()*3.4+(loose?1.6:0),loose,delay:.35+(.89-nx)*.8+Math.random()*.35,sx:-.5-Math.random()*.7,sy:ny+(Math.random()-.5)*.5,ph:Math.random(),sp:.12+Math.random()*.18})});
-const star=starParticles(STAR_R,.0058).map(p=>({...p,dx:0,dy:0,st:Math.random()*.2,delay:.38+Math.random()*.35,sx:-.5-Math.random()*.7,sy:.1+Math.random()*.5}));
+const star=starParticles(STAR_R,.0058).map(p=>({...p,dx:0,dy:0,st:Math.random()*.2,delay:.38+Math.random()*.35,sx:-.5-Math.random()*.7,sy:.1+Math.random()*.5,lk:Math.random()<.3?1+Math.random()*.32:1-Math.random()*.06,jx:(Math.random()-.5)*.05,jy:(Math.random()-.5)*.05}));
 function size(){const r=c.getBoundingClientRect();W=r.width;H=r.height;D=Math.min(devicePixelRatio||1,2);c.width=W*D;c.height=H*D;
   const mob=W<820;
   // whole figure visible on load: fit between the headline and the bottom of the screen
@@ -446,7 +448,7 @@ function draw(now){requestAnimationFrame(draw);
     const m=easeIO(clamp((P-.04-p.st)/.5,0,1));
     const hx=cx+(p.ux*co-p.uy*si)*sc*br,hy=cy+(p.ux*si+p.uy*co)*sc*br,ox=A.x+p.sx*sc,oy=A.y+p.sy*sc;
     const qx=ox+(hx-ox)*k,qy=oy+(hy-oy)*k;
-    const bx=B.x+(p.ux*cb-p.uy*sb)/STAR_R*B.R,by=B.y+(p.ux*sb+p.uy*cb)/STAR_R*B.R;
+    const bx=B.x+((p.ux*cb-p.uy*sb)/STAR_R*p.lk+p.jx)*B.R,by=B.y+((p.ux*sb+p.uy*cb)/STAR_R*p.lk+p.jy)*B.R;
     const px=qx+(bx-qx)*m,py=qy+(by-qy)*m;push(p,px,py);
     const z=p.s*k0*(.4+.6*k)*(.9+.15*Math.sin(T*3+p.ph*20))*(1+m*.2);x.globalAlpha=(.3+.7*k)*(1-m*.86);x.drawImage(spr,px+p.dx-z/2,py+p.dy-z/2,z,z)}
   x.globalAlpha=1;
