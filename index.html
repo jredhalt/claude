@@ -344,11 +344,12 @@ for(let i=0;i<N;i++){let tx,ty;for(;;){tx=Math.random()*2-1;ty=Math.random()*2-1
   P.push({sx:Math.random()*W,sy:Math.random()*H,tx,ty,s:2+Math.random()*3.4,d:Math.random()*.5,ph:Math.random()*6.28})}
 const eio=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,cl=(v,a,b)=>v<a?a:v>b?b:v;
 st.style.width=st.style.height=(R*2)+'px';
-const t0=performance.now();let rot=0,phase=0,done=false;
+const t0=performance.now();let rot=0,phase=0,done=false,last=t0;
 function frame(now){if(done)return;requestAnimationFrame(frame);
   const t=(now-t0)/1000;
   // spin: fast while gathering, easing to a stop
-  const spin=t<1.9?(14*Math.pow(1-cl(t/1.9,0,1),2)+.3):0;rot+=spin*(1/60);
+  // real-time spin (same speed at 60/120Hz), peak ~0.9 turns/s so the points always read crisp
+  const dt=Math.min(.05,(now-last)/1000);last=now;const spin=t<1.9?(5.6*Math.pow(1-cl(t/1.9,0,1),2)+.25):0;rot+=spin*dt;
   cnt.textContent=String(Math.min(100,Math.floor(cl(t/1.9,0,1)*100))).padStart(3,'0');
   x.setTransform(D,0,0,D,0,0);x.clearRect(0,0,W,H);
   const co=Math.cos(rot),si=Math.sin(rot),fade=0;
