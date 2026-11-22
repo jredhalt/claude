@@ -195,11 +195,13 @@ footer{display:flex;justify-content:space-between;padding:26px var(--pad);font-s
 .sh.s2{transform:translate(28px,-24px)}.sh.s1{transform:translate(14px,-12px)}
 .pcard{position:relative;background:#fff;border:1px solid rgba(12,12,14,.16);border-radius:12px;padding:24px 26px;min-height:230px}
 .bars{margin:14px 0 16px}.bars i{display:block;height:4px;background:#d3d2cd;border-radius:2px;width:72%}.bars i+i{width:54%;margin-top:6px}
-.pcard .svc{font-weight:600;font-size:18px;letter-spacing:-.02em;margin-bottom:10px;color:var(--blue);min-height:1.3em}
+.pcard .svc{display:block;grid-column:auto;margin-top:0;font-weight:600;font-size:18px;letter-spacing:-.02em;margin-bottom:10px;color:var(--blue);min-height:1.3em}
 .pcard ul{list-style:none}
-.pcard li{display:flex;gap:10px;align-items:center;font-size:15px;padding:6px 0;opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s}
-.pcard li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue);flex:none}
-.pcard li.in2{opacity:1;transform:none}
+.pcard .caps{margin-top:14px;border-top:1px solid rgba(12,12,14,.08)}
+.pcard li{display:flex;gap:12px;align-items:center;font-size:15px;padding:10px 0;border-bottom:1px solid rgba(12,12,14,.08);color:var(--ink);opacity:0;transform:translateY(6px);transition:opacity .45s,transform .45s}
+.pcard li::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue);flex:none}
+.pcard li:last-child{border-bottom:0}
+.pcard li.on{opacity:1;transform:none}
 .dcopy{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,80px);margin-top:clamp(40px,5vw,72px)}
 .dcopy h3{font-weight:600;font-size:clamp(20px,1.7vw,26px);letter-spacing:-.025em;margin:12px 0 10px}
 .dcopy p{font-size:16px;line-height:1.5;color:#55555a;max-width:44ch}
@@ -207,7 +209,6 @@ footer{display:flex;justify-content:space-between;padding:26px var(--pad);font-s
   .band .inner{flex-direction:column-reverse;align-items:flex-start;gap:28px}.globe{width:120px}
   .stage2{grid-template-columns:1fr;gap:56px;min-height:0}
   .ins{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .goal[data-k='4']{grid-column:1/3}
   .goal{font-size:13.5px;padding:12px 12px;text-align:center}
   .pk{margin-right:28px;margin-top:20px}
   .dcopy{grid-template-columns:1fr;gap:28px}
@@ -269,12 +270,11 @@ footer{display:flex;justify-content:space-between;padding:26px var(--pad);font-s
         <button class="goal" data-k="0">Launch something new</button>
         <button class="goal" data-k="1">Grow an audience</button>
         <button class="goal" data-k="2">Own a big moment</button>
-        <button class="goal" data-k="3">Reposition the brand</button>
-        <button class="goal" data-k="4">Work with athletes &amp; creators</button>
+        <button class="goal" data-k="3">Work with athletes &amp; creators</button>
       </div>
       <div class="hub"><span class="hs"><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg></span><b>NOISE</b><small>STUDIO</small></div>
       <div class="pk"><div class="sh s2"></div><div class="sh s1"></div>
-        <div class="pcard"><span class="mono-l">YOUR PLAN</span><div class="bars"><i></i><i></i></div><p class="svc"></p><ul></ul></div>
+        <div class="pcard"><span class="mono-l">WHAT WE DO</span><ul class="caps"></ul></div>
       </div>
     </div>
   </div>
@@ -284,21 +284,21 @@ footer{display:flex;justify-content:space-between;padding:26px var(--pad);font-s
   <div class="bridge" aria-hidden="true"><span class="bl"></span><i class="bd"></i></div>
   <div class="ohead"><span class="mono-l">03 / The work</span><h2>Three ways we work.</h2></div>
   <div class="offers">
-    <article class="offer  rv">
+    <article class="offer lit rv">
       <div class="otop"><span class="n">01</span></div>
       <h3>Strategy &amp; Advisory</h3>
       <p class="line">Clear thinking before anything gets made. Where you play, who you're for, and how you win there.</p>
       <ul><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Brand and market positioning</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Audience and channel strategy</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Launch and go-to-market planning</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Talent and partnership strategy</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Ongoing advisory for leadership</span></li></ul>
       <div class="ofoot"><span>Project or retainer.</span><a class="pill" href="#contact">Start here <span aria-hidden="true">→</span></a></div>
     </article>
-    <article class="offer rv">
+    <article class="offer lit rv">
       <div class="otop"><span class="n">02</span></div>
       <h3>Content Production</h3>
       <p class="line">A content operation that runs every week of the year, from first idea to last post.</p>
       <ul><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Monthly creative strategy and concepts</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Production, from shoot to final edit</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Hosts, talent and creators sourced</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Publishing across your channels</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>A monthly read on what worked, and what's next</span></li></ul>
       <div class="ofoot"><span>Monthly.</span><a class="pill" href="#contact">Start here <span aria-hidden="true">→</span></a></div>
     </article>
-    <article class="offer  rv">
+    <article class="offer lit rv">
       <div class="otop"><span class="n">03</span></div>
       <h3>Campaign Development</h3>
       <p class="line">The big moments, built end to end. Launches, stunts, activations and films with a start and a finish.</p>
@@ -493,12 +493,12 @@ let live=[];
 
 // ---------- how-it-works diagram ----------
 (()=>{
+// four broad goals; each opens the full set of services it draws on
 const D=[
- {svc:'Strategy & Advisory + Campaign Development',items:['Positioning and identity','Launch campaign','Go-to-market plan']},
- {svc:'Content Production',items:['A weekly content engine','Hosts, talent and creators','A monthly read on what worked']},
- {svc:'Campaign Development',items:['Concept and creative direction','Production and crew','Rollout across every channel']},
- {svc:'Strategy & Advisory',items:['Brand and market positioning','Audience and channel strategy','A clear roadmap to act on']},
- {svc:'Content Production + Campaign Development',items:['The right athletes and creators','Content built around them','Distribution across their channels']}];
+ ['Launch strategy & execution','Product development','Launch partnerships','Creative direction','Paid media'],
+ ['Organic content','Social strategy','Creator & influencer strategy','Paid media','Community building'],
+ ['Live activations','Digital experiences','Brand collaborations','Event production','Content capture & rollout'],
+ ['Creator & influencer strategy','Athlete partnerships','Brand collaborations','Ambassador programs','Co-branded products']];
 const root=document.getElementById('how'),st=root.querySelector('.stage2'),svg=root.querySelector('.wires'),ins=[...root.querySelectorAll('.goal')],hub=root.querySelector('.hub'),card=root.querySelector('.pk');
 const NS='http://www.w3.org/2000/svg';let paths=[],out=null,dots=[],cur=0,timer=null,t0=performance.now();
 function build(){
@@ -516,15 +516,15 @@ function build(){
   const c=document.createElementNS(NS,'circle');c.setAttribute('r',4);svg.appendChild(c);dots.push(c);
   paths.forEach((p,i)=>p.classList.toggle('on',i===cur));
 }
-const OF=[...document.querySelectorAll('.offer')],MAP=[[0,2],[1],[2],[0],[1,2]];
-function select(k){cur=k;OF.forEach((o,i)=>o.classList.toggle('lit',MAP[k].includes(i)));ins.forEach((b,i)=>b.classList.toggle('on',i===k));paths.forEach((p,i)=>p.classList.toggle('on',i===k));
-  const cd=card.querySelector('.pcard'),ul=cd.querySelector('ul');cd.querySelector('.svc').textContent=D[k].svc;
-  ul.innerHTML=D[k].items.map(t=>`<li>${t}</li>`).join('');[...ul.children].forEach((li,i)=>setTimeout(()=>li.classList.add('in2'),500+i*120));t0=performance.now()}
-function auto(){clearInterval(timer);timer=setInterval(()=>select((cur+1)%5),3600)}
+const OF=[...document.querySelectorAll('.offer')];
+const CUL=card.querySelector('.caps');
+function select(k){cur=k;ins.forEach((b,i)=>b.classList.toggle('on',i===k));paths.forEach((p,i)=>p.classList.toggle('on',i===k));
+  CUL.innerHTML=D[k].map(t=>`<li>${t.replace('&','&amp;')}</li>`).join('');[...CUL.children].forEach((li,i)=>setTimeout(()=>li.classList.add('on'),380+i*90));t0=performance.now()}
+function auto(){clearInterval(timer);timer=setInterval(()=>select((cur+1)%ins.length),3600)}
 ins.forEach((b,i)=>{b.addEventListener('mouseenter',()=>{select(i);auto()});b.addEventListener('click',()=>{select(i);auto()})});
 function tick(now){requestAnimationFrame(tick);if(!paths.length)return;const t=(now-t0)/1000;
   paths.forEach((p,i)=>{const L=p.getTotalLength(),sp=i===cur?.9:.35,f=((t*sp+i*.23)%1),pt=p.getPointAtLength(L*f);dots[i].setAttribute('cx',pt.x);dots[i].setAttribute('cy',pt.y);dots[i].style.opacity=i===cur?1:.35});
-  const L=out.getTotalLength(),f=Math.min(1,Math.max(0,(t-.15)/.5)),pt=out.getPointAtLength(L*f);dots[5].setAttribute('cx',pt.x);dots[5].setAttribute('cy',pt.y);dots[5].style.opacity=f<1?1:0}
+  const L=out.getTotalLength(),f=Math.min(1,Math.max(0,(t-.15)/.5)),pt=out.getPointAtLength(L*f);const od=dots[dots.length-1];od.setAttribute('cx',pt.x);od.setAttribute('cy',pt.y);od.style.opacity=f<1?1:0}
 const ro=new ResizeObserver(build);ro.observe(st);addEventListener('load',build);
 select(0);auto();requestAnimationFrame(tick);
 })();
