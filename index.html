@@ -57,7 +57,7 @@ h1 .g{color:var(--grey)}
 .hlogos{margin-top:28px;display:flex;justify-content:center;align-items:baseline;gap:clamp(18px,2.6vw,40px);pointer-events:none}
 .hlogos b{font-weight:600;font-size:clamp(13px,1vw,15px);letter-spacing:-.01em;color:#a3a3a3}
 .after{position:absolute;left:var(--pad);right:var(--pad);top:50%;margin-top:-1px;text-align:center;z-index:2;opacity:0;transform:translateY(16px)}
-.after .mf,.after .mfsub,.after .hlogos{text-shadow:0 0 14px var(--paper),0 0 4px var(--paper),0 0 2px var(--paper)}
+.after .mfsub,.after .hlogos{text-shadow:0 0 14px var(--paper),0 0 4px var(--paper),0 0 2px var(--paper)}
 .after .hlogos{margin-top:clamp(36px,6vh,64px);align-items:center;pointer-events:auto;flex-wrap:wrap;row-gap:18px}
 .hlogos .cap{width:100%;text-align:center}
 .lgo{display:block;width:auto;filter:grayscale(1);opacity:.5;transition:filter .3s,opacity .3s}
@@ -88,8 +88,10 @@ h1 .g{color:var(--grey)}
 .mf{max-width:none;font-size:clamp(40px,6.4vw,112px)!important;line-height:.98!important;margin:0 auto;font-weight:500;font-size:clamp(34px,4.6vw,76px);line-height:1.04;letter-spacing:-.04em}
 .mf .g{color:var(--blue)}
 .mf{color:var(--ink)}
-.mf .px{font-family:'Pixelify Sans',monospace;font-weight:600;letter-spacing:-.01em}
-.mf .ch{display:inline-block;text-align:center}
+.mf .ch{display:inline-block;position:relative}
+.mf .ch canvas{position:absolute;left:0;top:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;display:none;pointer-events:none}
+.mf .ch.px{color:transparent}
+.mf .ch.px canvas{display:block}
 .mfsub{max-width:44ch;margin:clamp(22px,3vh,36px) auto 0;font-size:clamp(18px,1.6vw,24px);line-height:1.4;letter-spacing:-.015em;color:#3b3b40}
 .mfsub .b{color:var(--blue)}
 .ways{grid-column:4/13;margin-top:56px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
@@ -460,16 +462,25 @@ const wrap=n=>{for(const c of [...n.childNodes]){if(c.nodeType===3){const f=docu
 wrap(h);
 const L=[...h.querySelectorAll('.ch')];const after=document.querySelector('.after');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-// lock every letter to its normal width so the pixel cut never reflows the line
-function lock(){L.forEach(e=>{e.classList.remove('px');e.style.width='';});const w=L.map(e=>e.getBoundingClientRect().width);L.forEach((e,i)=>{e.style.width=w[i]+'px'})}
-document.fonts&&document.fonts.ready.then(lock);addEventListener('resize',lock);lock();
-// a few chunks at a time, each living a short, staggered life — no full reshuffles
+// pixel cut: each letter is re-drawn from its own glyph on a coarse grid, same footprint, hard edges
+function build(){L.forEach(e=>{e.classList.remove('px');const old=e.querySelector('canvas');old&&old.remove()});
+  L.forEach(e=>{const r=e.getBoundingClientRect(),cs=getComputedStyle(e),fs=parseFloat(cs.fontSize);if(!r.width)return;
+    const W=Math.ceil(r.width),H=Math.ceil(r.height),big=document.createElement('canvas');big.width=W;big.height=H;const g=big.getContext('2d');
+    g.font=cs.fontWeight+' '+fs+'px '+cs.fontFamily;g.fillStyle=cs.color;g.textAlign='center';g.textBaseline='alphabetic';
+    const m=g.measureText(e.textContent),asc=m.fontBoundingBoxAscent||fs*.8,des=m.fontBoundingBoxDescent||fs*.2;
+    const base=(H-(asc+des))/2+asc;g.fillText(e.textContent,W/2,base);
+    const cell=Math.max(3,Math.round(fs/16)),w=Math.ceil(W/cell),hh=Math.ceil(H/cell),c=document.createElement('canvas');c.width=w;c.height=hh;
+    const x=c.getContext('2d');x.imageSmoothingEnabled=true;x.drawImage(big,0,0,w*cell,hh*cell,0,0,w,hh);
+    const d=x.getImageData(0,0,w,hh),p=d.data;for(let i=0;i<p.length;i+=4){p[i+3]=p[i+3]>72?255:0}x.putImageData(d,0,0);
+    c.style.width=(w*cell)+'px';c.style.height=(hh*cell)+'px';e.appendChild(c)})}
+let rt;document.fonts&&document.fonts.ready.then(build);addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(build,150)});build();
+// one or two short runs at a time, calm cadence
 let live=[];
 (function loop(){const vis=parseFloat(after.style.opacity||0)>.4;
-  if(reduce||!vis){live=[];L.forEach(e=>e.classList.remove('px'));return setTimeout(loop,300)}
+  if(reduce||!vis){if(live.length){live=[];L.forEach(e=>e.classList.remove('px'))}return setTimeout(loop,300)}
   const now=performance.now();live=live.filter(c=>{if(now>c.end){c.els.forEach(e=>e.classList.remove('px'));return false}return true});
-  if(live.length<3){const i=Math.floor(Math.random()*L.length),els=L.slice(i,i+1+Math.floor(Math.random()*3));els.forEach(e=>e.classList.add('px'));live.push({els,end:now+260+Math.random()*320})}
-  setTimeout(loop,140)})();
+  if(live.length<2&&Math.random()<.55){const i=Math.floor(Math.random()*L.length),els=L.slice(i,i+1+Math.floor(Math.random()*3)).filter(e=>!e.classList.contains('px'));els.forEach(e=>e.classList.add('px'));live.push({els,end:now+420+Math.random()*380})}
+  setTimeout(loop,170)})();
 })();
 
 // ---------- how-it-works diagram ----------
