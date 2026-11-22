@@ -30,6 +30,9 @@ a{color:inherit;text-decoration:none}
 /* intro */
 #intro{position:fixed;inset:0;z-index:200;background:var(--blue);clip-path:inset(0 0 0 0);transition:clip-path 1s cubic-bezier(.76,0,.24,1)}
 #intro.lift{clip-path:inset(0 0 100% 0)}
+#iword{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:clamp(76px,15vw,230px);letter-spacing:-.05em;line-height:1;padding-right:.56em}
+#iword .il{display:inline-block;overflow:hidden;text-align:center;padding:.06em 0}
+#iword .il>span{display:block;transform:translateY(105%)}
 #introc{position:absolute;inset:0;width:100%;height:100%}
 #introStar{position:fixed;left:0;top:0;width:10px;height:10px;color:#fff;z-index:201;opacity:0;transform-origin:50% 50%}
 .ilab{position:absolute;left:var(--pad);right:var(--pad);bottom:28px;display:flex;justify-content:space-between;color:rgba(255,255,255,.75);font-size:12px;font-weight:500;letter-spacing:.08em;font-variant-numeric:tabular-nums;transition:opacity .3s}
@@ -249,7 +252,7 @@ h1.hh-d{display:none}
 </style>
 </head>
 <body class="intro-on">
-<div id="intro" aria-hidden="true"><canvas id="introc"></canvas><div class="ilab"><span>NOISE</span><span id="icount">000</span></div></div>
+<div id="intro" aria-hidden="true"><div id="iword"><span class="il"><span>N</span></span><span class="il"><span>O</span></span><span class="il"><span>I</span></span><span class="il"><span>S</span></span><span class="il"><span>E</span></span></div><div class="ilab"><span>Creative studio</span><span id="icount">000</span></div></div>
 <svg id="introStar" viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg>
 
 <nav class="nav" id="nav">
@@ -339,79 +342,40 @@ h1.hh-d{display:none}
 <footer><span>© 2026 NOISE</span><span>New York</span></footer>
 
 <script>
-// ---------- intro: the noise collapses into the mark, it spins, then flies to its place ----------
+// ---------- intro: N-O-I-S-E spells itself out, the mark lands after the E, then flies to its place ----------
 (()=>{
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-window.INTRO_MS=reduce?0:3100;
+window.INTRO_MS=reduce?0:2950;
 const ov=document.getElementById('intro');
 if(reduce){ov.remove();document.body.classList.remove('intro-on');return}
-const cv=document.getElementById('introc'),x=cv.getContext('2d'),st=document.getElementById('introStar'),cnt=document.getElementById('icount');
-let W=innerWidth,H=innerHeight,D=Math.min(devicePixelRatio||1,2);cv.width=W*D;cv.height=H*D;
-const R=Math.min(W,H)*(W<820?.2:.14),cx=W/2,cy=H/2;
-function sE(th,Ro,Ri){let l=((th+Math.PI/2)%(Math.PI/4)+Math.PI/4)%(Math.PI/4);if(l>Math.PI/8)l=Math.PI/4-l;const x2=Ri*Math.cos(Math.PI/8),y2=Ri*Math.sin(Math.PI/8),ux=Math.cos(l),uy=Math.sin(l);return (Ro*y2)/(ux*y2-uy*(x2-Ro))}
-const spr=document.createElement('canvas');spr.width=spr.height=40;{const g=spr.getContext('2d');g.translate(20,20);g.beginPath();for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=i%2?7.5:19;i?g.lineTo(Math.cos(a)*r,Math.sin(a)*r):g.moveTo(Math.cos(a)*r,Math.sin(a)*r)}g.closePath();g.fillStyle='#fff';g.fill()}
-const N=W<820?900:1500,P=[];
-for(let i=0;i<N;i++){let tx,ty;for(;;){tx=Math.random()*2-1;ty=Math.random()*2-1;if(Math.hypot(tx,ty)<=sE(Math.atan2(ty,tx),1,.42))break}
-  P.push({sx:Math.random()*W,sy:Math.random()*H,tx,ty,s:2+Math.random()*3.4,d:Math.random()*.5,ph:Math.random()*6.28})}
-const eio=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,cl=(v,a,b)=>v<a?a:v>b?b:v;
-st.style.width=st.style.height=(R*2)+'px';
-const GN=W<820?30:34,GH=Math.round(GN*1.7),GY=Math.round(GN*.85);
-const gc=document.createElement('canvas');gc.width=GN;gc.height=GH;const g=gc.getContext('2d',{willReadFrequently:true});
-const gc2=document.createElement('canvas');gc2.width=gc2.height=GN*3;const g2=gc2.getContext('2d',{willReadFrequently:true});
-const t0=performance.now();let rot=0,phase=0,done=false,last=t0;
-function frame(now){if(done)return;requestAnimationFrame(frame);
-  const t=(now-t0)/1000;
-  // ---- pixel sprite: a ball dribbles, coin-flips into the mark, then resolves to the vector logo ----
-  cnt.textContent=String(Math.min(100,Math.floor(cl(t/2,0,1)*100))).padStart(3,'0');
-  x.setTransform(D,0,0,D,0,0);x.clearRect(0,0,W,H);if(phase===0)phase=1;
-  const FPS=12,tf=Math.floor(t*FPS)/FPS;rot=0;
-  if(tf<2.05){const n=GN,cs=2*R/n;            // grid: n cells across 2R
-    g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,n,GH);
-    const ox=n/2,floor=GH-3,rB=n*.4;          // ball radius in cells
-    let bx=ox,by,sx=1,sy=1,shape='ball',flip=1,spin=tf*7;
-    if(tf<1.1){const p=tf/.3667+.5,f=p%1,h=1-Math.pow(f*2-1,2);by=floor-rB-h*(GH*.42);
-      if(h<.08){sy=.8;sx=1.16;by=floor-rB*.8}}          // squash on the floor
-    else{const k=cl((tf-1.1)/.35,0,1),e=1-Math.pow(1-k,3);by=(floor-rB)+(GY-(floor-rB))*e;
-      const ph=cl((tf-1.2)/.4,0,1)*Math.PI+(tf>1.65?cl((tf-1.65)/.4,0,1)*Math.PI*2:0);
-      flip=Math.cos(ph);if(ph>Math.PI/2)shape='star';spin=1.1*7}
-    // floor shadow while dribbling
-    if(tf<1.25){const hgt=cl(1-(floor-rB-by)/(GH*.36),0,1),w=rB*(.55+.5*hgt);g.fillStyle='#fff';g.globalAlpha=1;
-      g.fillRect(Math.round(ox-w),floor+1,Math.round(w*2),1)}
-    g.save();g.translate(bx,by);g.scale(sx*Math.max(.08,Math.abs(flip)),sy);g.fillStyle='#fff';
-    if(shape==='ball'){g.beginPath();g.arc(0,0,rB,0,7);g.fill();
-      g.globalCompositeOperation='destination-out';g.lineWidth=1.25;g.beginPath();
-      g.moveTo(-rB,0);g.lineTo(rB,0);                                    // equator
-      g.moveTo(0,-rB);g.ellipse(0,0,Math.abs(Math.cos(spin))*rB*.98,rB,0,-Math.PI/2,Math.PI*1.5);   // meridian turning with the spin
-      g.moveTo(0,-rB);g.ellipse(0,0,Math.abs(Math.sin(spin))*rB*.98,rB,0,-Math.PI/2,Math.PI*1.5);
-      g.stroke();g.globalCompositeOperation='source-over'}
-    else{const r=n*.48;g.beginPath();for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,rr=i%2?r*.42:r;i?g.lineTo(Math.cos(a)*rr,Math.sin(a)*rr):g.moveTo(Math.cos(a)*rr,Math.sin(a)*rr)}g.closePath();g.fill()}
-    g.restore();
-    // hard pixels: no anti-aliasing anywhere
-    const id=g.getImageData(0,0,n,GH),d=id.data;for(let i=3;i<d.length;i+=4)d[i]=d[i]>110?255:0;g.putImageData(id,0,0);
-    x.imageSmoothingEnabled=false;x.drawImage(gc,0,0,n,GH,cx-R,cy-GY*cs,n*cs,GH*cs)}
-  else{// resolve: one finer pixel step, then the exact vector mark
-    const r=R*.96;if(tf<2.14){const n2=GN*3,c2=2*R/n2;g2.setTransform(1,0,0,1,0,0);g2.clearRect(0,0,n2,n2);g2.fillStyle='#fff';g2.beginPath();
-      for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,rr=(i%2?.42:1)*n2*.48;i?g2.lineTo(n2/2+Math.cos(a)*rr,n2/2+Math.sin(a)*rr):g2.moveTo(n2/2+Math.cos(a)*rr,n2/2+Math.sin(a)*rr)}g2.fill();
-      const id=g2.getImageData(0,0,n2,n2),d=id.data;for(let i=3;i<d.length;i+=4)d[i]=d[i]>110?255:0;g2.putImageData(id,0,0);
-      x.imageSmoothingEnabled=false;x.drawImage(gc2,0,0,n2,n2,cx-R,cy-R,2*R,2*R)}
-    else{x.fillStyle='#fff';x.beginPath();for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,rr=i%2?r*.42:r;i?x.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr):x.moveTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr)}x.fill()}}
-  if(t>=2.2&&phase===1){phase=2;fly()}
+const st=document.getElementById('introStar'),cnt=document.getElementById('icount'),word=document.getElementById('iword');
+const L=[...word.querySelectorAll('.il')],inner=L.map(e=>e.firstElementChild),FINAL='NOISE',POOL='NOISE#*/+=<>01';
+const EZ='cubic-bezier(.22,1,.36,1)',EIO='cubic-bezier(.76,0,.24,1)';
+function start(){
+  // lock each slot to its final glyph width so the scramble never shifts the word
+  L.forEach(e=>{e.style.width=e.getBoundingClientRect().width+'px'});
+  const t0=performance.now();
+  (function count(){const k=Math.min(1,(performance.now()-t0)/1900);cnt.textContent=String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
+  inner.forEach((el,i)=>{const at=120+i*135;
+    setTimeout(()=>{el.animate([{transform:'translateY(105%)'},{transform:'none'}],{duration:520,easing:EZ,fill:'forwards'});
+      let n=0;const iv=setInterval(()=>{if(++n>4){clearInterval(iv);el.textContent=FINAL[i];return}el.textContent=POOL[Math.floor(Math.random()*POOL.length)]},48)},at)});
+  // the mark lands just after the E
+  setTimeout(()=>{const e=L[4].getBoundingClientRect(),sz=e.height*.66,x0=e.right+sz*.16,y0=e.top+(e.height-sz)/2+e.height*.02;
+    st.style.width=st.style.height=sz+'px';st.style.left=x0+'px';st.style.top=y0+'px';st.style.opacity=1;
+    st.animate([{transform:'scale(0) rotate(-135deg)'},{transform:'scale(1.08) rotate(8deg)',offset:.7},{transform:'none'}],{duration:620,easing:EZ,fill:'forwards'});
+    setTimeout(()=>fly(sz,x0,y0),980)},120+5*135+260);
 }
-function fly(){
-  const tgt=document.querySelector('.brand svg').getBoundingClientRect();
-  const s=tgt.width/(R*2),tx=tgt.left+tgt.width/2-R,ty=tgt.top+tgt.height/2-R;
+function fly(sz,x0,y0){
+  const tg=document.querySelector('.brand svg').getBoundingClientRect(),s=tg.width/sz,dx=tg.left+tg.width/2-(x0+sz/2),dy=tg.top+tg.height/2-(y0+sz/2);
   ov.querySelector('.ilab').style.opacity=0;
-  // hand off from canvas to the svg at the exact same pose, then fly
-  st.style.transition='none';st.style.transform=`translate(${cx-R}px,${cy-R}px) rotate(${rot}rad)`;st.style.opacity=1;
-  x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,cv.width,cv.height);done=true;st.getBoundingClientRect();
-  st.style.transition='transform .95s cubic-bezier(.76,0,.24,1), color .5s .3s';
-  const turns=Math.round(rot/(Math.PI/4))*(Math.PI/4)+Math.PI*2;
-  requestAnimationFrame(()=>{st.style.transform=`translate(${tx}px,${ty}px) rotate(${turns}rad) scale(${s})`;st.style.color='#0A14FF';ov.classList.add('lift')});
-  setTimeout(()=>{document.body.classList.remove('intro-on')},900);
-  setTimeout(()=>{ov.remove();st.remove()},1100);
+  inner.forEach((el,i)=>el.animate([{transform:'none'},{transform:'translateY(-110%)'}],{duration:620,delay:i*45,easing:EIO,fill:'forwards'}));
+  st.animate([{transform:'none',color:'#fff'},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,color:'#0A14FF'}],{duration:1000,easing:EIO,fill:'forwards'});
+  setTimeout(()=>ov.classList.add('lift'),220);
+  setTimeout(()=>document.body.classList.remove('intro-on'),1000);
+  setTimeout(()=>{ov.remove();st.remove()},1250);
 }
-ov.addEventListener('click',()=>{if(phase<2){phase=2;st.style.opacity=1;st.style.transform=`translate(${cx-R}px,${cy-R}px) rotate(${rot}rad)`;fly()}});
-requestAnimationFrame(frame);
+ov.addEventListener('click',()=>{window.INTRO_MS=0;ov.classList.add('lift');document.body.classList.remove('intro-on');setTimeout(()=>{ov.remove();st.remove()},900)},{once:true});
+(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>requestAnimationFrame(start));
 })();
 </script>
 <script>
