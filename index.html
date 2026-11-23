@@ -440,7 +440,7 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 // ---------- intro: N-O-I-S-E spells itself out, the mark lands after the E, then flies to its place ----------
 (()=>{
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-window.INTRO_MS=reduce?0:2850;
+window.INTRO_MS=reduce?0:3500;
 const ov=document.getElementById('intro');
 if(reduce){ov.remove();document.body.classList.remove('intro-on');return}
 const st=document.getElementById('introStar'),cnt=document.getElementById('icount'),word=document.getElementById('iword');
@@ -452,18 +452,34 @@ const EZ='cubic-bezier(.22,1,.36,1)',EIO='cubic-bezier(.76,0,.24,1)';
   const st=document.createElement('style');st.textContent=`#iword .il>span{color:transparent;background:url(${c.toDataURL()}) 0 0/160px 160px;-webkit-background-clip:text;background-clip:text;animation:igrain 9s linear infinite}
   @keyframes igrain{to{background-position:160px 320px}}@media (prefers-reduced-motion:reduce){#iword .il>span{animation:none}}`;document.head.appendChild(st)})();
 function start(){
-  // lock each slot to its final glyph width so the scramble never shifts the word
-  L.forEach(e=>{e.style.width=e.getBoundingClientRect().width+'px'});
-  const t0=performance.now(),STEP=210,SCR=62,HOLD=140;
-  (function count(){const k=Math.min(1,(performance.now()-t0)/3000);cnt.textContent=String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
-  inner.forEach((el,i)=>{setTimeout(()=>{el.animate([{opacity:0,transform:'translateY(18%)'},{opacity:1,transform:'none'}],{duration:420,easing:EZ,fill:'forwards'});
-      let n=0;const iv=setInterval(()=>{if(++n>4){clearInterval(iv);el.textContent=FINAL[i];return}el.textContent=POOL[Math.floor(Math.random()*POOL.length)]},SCR)},150+i*STEP)});
-  const locked=150+4*STEP+5*SCR+40,out=locked+HOLD;
-  // hard cut: the word vanishes and the mark is there, same frame
-  setTimeout(()=>{word.style.visibility='hidden';
-    const sz=Math.min(innerWidth,innerHeight)*(innerWidth<820?.26:.2),x0=(innerWidth-sz)/2,y0=(innerHeight-sz)/2;
-    st.style.width=st.style.height=sz+'px';st.style.left=x0+'px';st.style.top=y0+'px';st.style.opacity=1;
-    setTimeout(()=>fly(sz,x0,y0),520)},out);
+  // stop-motion: the mark bursts into N-O-I-S-E, the letters boil in place, then fold back into the mark
+  const FPS=12,W=innerWidth,H=innerHeight,cx=W/2,cy=H/2;
+  const sz=Math.min(W,H)*(W<820?.26:.2),x0=cx-sz/2,y0=cy-sz/2;
+  st.style.width=st.style.height=sz+'px';st.style.left=x0+'px';st.style.top=y0+'px';
+  inner.forEach((el,i)=>el.textContent=FINAL[i]);
+  const R=L.map(e=>{const r=e.getBoundingClientRect();return{dx:cx-(r.left+r.width/2),dy:cy-(r.top+r.height/2)}});
+  const sc=L.map(()=>({sx:1.25+Math.random()*.35,rot:(Math.random()-.5)*46,rot0:(Math.random()-.5)*120}));
+  const ease=k=>1-Math.pow(1-k,3),cl=(v,a,b)=>Math.min(b,Math.max(a,v)),j=(a)=>(Math.random()-.5)*a;
+  const T={grow:[0,380],burst:[700,1000],settle:[1000,1250],fold:[1980,2280]};
+  const t0=performance.now();let last=-1,flown=false;
+  (function count(){const k=Math.min(1,(performance.now()-t0)/2400);cnt.textContent=String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
+  (function frame(now){if(flown)return;requestAnimationFrame(frame);
+    const t=Math.floor((now-t0)/(1000/FPS))*(1000/FPS);if(t===last)return;last=t;
+    // star
+    let showStar=t<T.burst[0]||t>=T.fold[1]-80,ss=1,sr=0;
+    if(t<T.grow[1]){const k=ease(cl(t/T.grow[1],0,1));ss=k;sr=(1-k)*-160}
+    st.style.opacity=showStar?1:0;st.style.transform=`translate(${j(3)}px,${j(3)}px) rotate(${sr+j(4)}deg) scale(${ss})`;
+    // letters
+    L.forEach((e,i)=>{const r=R[i],c=sc[i];let k,x,y,s,rot,op=1;
+      if(t<T.burst[0]){op=0;x=r.dx;y=r.dy;s=.2;rot=c.rot0}
+      else if(t<T.burst[1]){k=ease((t-T.burst[0])/(T.burst[1]-T.burst[0]));x=r.dx*(1-k*c.sx);y=r.dy*(1-k*c.sx)+j(10);s=.2+.85*k;rot=c.rot0*(1-k)+c.rot*k}
+      else if(t<T.settle[1]){k=ease((t-T.settle[0])/(T.settle[1]-T.settle[0]));const ox=-r.dx*(c.sx-1),oy=-r.dy*(c.sx-1);x=ox*(1-k);y=oy*(1-k);s=1.05-.05*k;rot=c.rot*(1-k)}
+      else if(t<T.fold[0]){x=j(3);y=j(3);s=1;rot=j(3)}
+      else if(t<T.fold[1]){k=ease((t-T.fold[0])/(T.fold[1]-T.fold[0]));x=r.dx*k+j(4);y=r.dy*k+j(4);s=1-.8*k;rot=c.rot0*k*.6}
+      else{op=0;x=r.dx;y=r.dy;s=.2;rot=0}
+      inner[i].style.opacity=op;e.style.transform=`translate(${x}px,${y}px) rotate(${rot}deg) scale(${s})`});
+    if(t>=T.fold[1]+160&&!flown){flown=true;word.style.visibility='hidden';st.style.transform='none';fly(sz,x0,y0)}
+  })(t0);
 }
 function fly(sz,x0,y0){
   const tg=document.querySelector('.brand svg').getBoundingClientRect(),s=tg.width/sz,dx=tg.left+tg.width/2-(x0+sz/2),dy=tg.top+tg.height/2-(y0+sz/2);
