@@ -600,7 +600,9 @@ function build(){svg.innerHTML='';P=[];dots=[];
 G.forEach((g,i)=>{g.addEventListener('mouseenter',()=>P[i]&&P[i].classList.add('on'));g.addEventListener('mouseleave',()=>P[i]&&P[i].classList.remove('on'))});
 const t0=performance.now();let lastPulse=0;
 function tick(now){requestAnimationFrame(tick);if(!P.length)return;const t=(now-t0)/1000;let arrive=false;
-  P.forEach((p,i)=>{const L=p.getTotalLength(),f=(t*.42+i*.125)%1,e=f<.5?2*f*f:1-Math.pow(-2*f+2,2)/2,pt=p.getPointAtLength(L*e);
+  // one shared clock: every dot leaves together and lands together
+  const f=(t/2.4)%1,e=.5-Math.cos(Math.PI*f)/2;
+  P.forEach((p,i)=>{const L=p.getTotalLength(),pt=p.getPointAtLength(L*e);
     dots[i].setAttribute('cx',pt.x);dots[i].setAttribute('cy',pt.y);dots[i].style.opacity=f<.06?f/.06:f>.94?(1-f)/.06:1;if(f>.97)arrive=true});
 }
 new ResizeObserver(build).observe(st);addEventListener('load',build);build();requestAnimationFrame(tick);
