@@ -451,7 +451,7 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 // ---------- intro: N-O-I-S-E spells itself out, the mark lands after the E, then flies to its place ----------
 (()=>{
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-window.INTRO_MS=reduce?0:3950;
+window.INTRO_MS=reduce?0:4550;
 const ov=document.getElementById('intro');
 if(reduce){ov.remove();document.body.classList.remove('intro-on');return}
 const st=document.getElementById('introStar'),cnt=document.getElementById('icount'),word=document.getElementById('iword');
@@ -475,15 +475,23 @@ function start(){
     g.globalAlpha=Math.random()<.12?.85:1;g.drawImage(base,0,y,Q,h,slip,y,Q,h)}
   st.style.filter='drop-shadow(0 0 10px rgba(255,255,255,.4))';
   st.innerHTML=`<image x="-10" y="-10" width="20" height="20" href="${sc.toDataURL()}"/>`;st.dataset.led=1;
-  const ON=1250;
+  // terminal move: NOISE is backspaced out, the block cursor flips edge-on and comes back round as the mark, spinning hard
+  const cur=document.getElementById('icur'),DEL=1250;
+  [4,3,2,1,0].forEach((n,k)=>setTimeout(()=>{txt.textContent='NOISE'.slice(0,n)},DEL+k*55));
   setTimeout(()=>{
-    // CRT switch: the word collapses to a line, the mark opens out of it
-    crt.animate([{transform:'scaleY(1)',opacity:1},{transform:'scaleY(.02)',opacity:.9,offset:.8},{transform:'scaleY(0)',opacity:0}],{duration:260,easing:'cubic-bezier(.6,0,.9,.4)',fill:'forwards'});
-    setTimeout(()=>{st.style.opacity=1;
-      st.animate([{transform:'perspective(900px) scaleY(.02)'},{transform:'perspective(900px) scaleY(1)'}],{duration:300,easing:EZ,fill:'forwards'});
-      // one turn in 3D, around the vertical axis
-      setTimeout(()=>st.animate([{transform:'perspective(900px) rotateY(0deg)'},{transform:'perspective(900px) rotateY(360deg)'}],{duration:950,easing:EIO,fill:'forwards'}),380);
-      setTimeout(()=>fly(sz,x0,y0),380+950+80)},230)},ON);
+    cur.style.animation='none';cur.style.opacity=1;
+    const r=cur.getBoundingClientRect(),blk=document.createElement('i');
+    blk.style.cssText=`position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;background:#fff;z-index:202;box-shadow:0 0 14px rgba(255,255,255,.45);transform-origin:50% 50%`;
+    document.body.appendChild(blk);crt.style.visibility='hidden';
+    const tx=cx-(r.left+r.width/2),ty=cy-(r.top+r.height/2),k=sz*.8/r.height;
+    // block glides to centre, grows, and starts to turn
+    blk.animate([{transform:'perspective(900px) translate(0,0) scale(1) rotateY(0deg)'},
+                 {transform:`perspective(900px) translate(${tx}px,${ty}px) scale(${k}) rotateY(0deg)`,offset:.55},
+                 {transform:`perspective(900px) translate(${tx}px,${ty}px) scale(${k}) rotateY(90deg)`}],{duration:520,easing:'cubic-bezier(.5,0,.75,0)',fill:'forwards'});
+    // edge-on: swap the block for the mark and keep spinning — fast, then settling
+    setTimeout(()=>{blk.remove();st.style.opacity=1;
+      st.animate([{transform:'perspective(900px) rotateY(90deg)'},{transform:'perspective(900px) rotateY(1800deg)'}],{duration:1650,easing:'cubic-bezier(.12,.75,.25,1)',fill:'forwards'});
+      setTimeout(()=>fly(sz,x0,y0),1650)},520)},DEL+5*55+60);
 }
 function fly(sz,x0,y0){
   const tg=document.querySelector('.brand svg').getBoundingClientRect(),s=tg.width/sz,dx=tg.left+tg.width/2-(x0+sz/2),dy=tg.top+tg.height/2-(y0+sz/2);
