@@ -451,7 +451,7 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 // ---------- intro: N-O-I-S-E spells itself out, the mark lands after the E, then flies to its place ----------
 (()=>{
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-window.INTRO_MS=reduce?0:3250;
+window.INTRO_MS=reduce?0:3950;
 const ov=document.getElementById('intro');
 if(reduce){ov.remove();document.body.classList.remove('intro-on');return}
 const st=document.getElementById('introStar'),cnt=document.getElementById('icount'),word=document.getElementById('iword');
@@ -466,25 +466,29 @@ function start(){
   const t0=performance.now();
   (function count(){const k=Math.min(1,(performance.now()-t0)/2700);cnt.textContent='CH 0'+(1+Math.floor(k*2))+'  '+String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
   'NOISE'.split('').forEach((c,i)=>setTimeout(()=>txt.textContent+=c,260+i*150));
-  // the mark: its exact shape, filled with live TV static
-  const D=Math.min(2,devicePixelRatio||1),sc=document.createElement('canvas'),Q=Math.ceil(sz*D);sc.width=sc.height=Q;sc.style.cssText='width:100%;height:100%;display:block';
-  const g=sc.getContext('2d'),pts=[];for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*Q/2;pts.push([Q/2+Math.cos(a)*r,Q/2+Math.sin(a)*r])}
-  const nz=document.createElement('canvas'),NQ=Math.ceil(Q/(2.2*D));nz.width=nz.height=NQ;const ng=nz.getContext('2d');
-  function paint(){const d=ng.createImageData(NQ,NQ),p=d.data;for(let i=0;i<p.length;i+=4){const r=Math.random(),v=r<.3?120+r*300:205+Math.random()*50;p[i]=v;p[i+1]=v;p[i+2]=Math.min(255,v+10);p[i+3]=255}ng.putImageData(d,0,0);
-    g.clearRect(0,0,Q,Q);g.save();g.beginPath();pts.forEach(([u,v],i)=>i?g.lineTo(u,v):g.moveTo(u,v));g.closePath();g.clip();g.imageSmoothingEnabled=false;g.drawImage(nz,0,0,Q,Q);g.restore()}
-  // the mark element is an SVG, so the static goes in as an <image> refreshed each frame
-  st.style.filter='drop-shadow(0 0 10px rgba(255,255,255,.35))';st.innerHTML='<image x="-10" y="-10" width="20" height="20"/>';const im=st.firstChild;st.dataset.led=1;
-  (function tv(){if(!document.body.contains(st))return;paint();im.setAttribute('href',sc.toDataURL());setTimeout(tv,70)})();
+  // the mark, rendered like the type on a CRT: solid white, broken by scanlines, a few rows slipped sideways, soft glow
+  const D=Math.min(2,devicePixelRatio||1),Q=Math.ceil(sz*D),sc=document.createElement('canvas');sc.width=sc.height=Q;const g=sc.getContext('2d');
+  const base=document.createElement('canvas');base.width=base.height=Q;const bg=base.getContext('2d');bg.fillStyle='#fff';bg.beginPath();
+  for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*Q/2*.96;bg.lineTo(Q/2+Math.cos(a)*r,Q/2+Math.sin(a)*r)}bg.fill();
+  const row=Math.max(3,Math.round(4*D));
+  for(let y=0;y<Q;y+=row){const slip=Math.random()<.1?(Math.random()-.5)*Q*.03:0,h=row-1;
+    g.globalAlpha=Math.random()<.12?.85:1;g.drawImage(base,0,y,Q,h,slip,y,Q,h)}
+  st.style.filter='drop-shadow(0 0 10px rgba(255,255,255,.4))';
+  st.innerHTML=`<image x="-10" y="-10" width="20" height="20" href="${sc.toDataURL()}"/>`;st.dataset.led=1;
   const ON=1250;
-  setTimeout(()=>{crt.style.visibility='hidden';st.style.opacity=1;
-    // one clean spin in place, then up to the corner
-    st.animate([{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],{duration:760,easing:EIO});
-    setTimeout(()=>fly(sz,x0,y0),900)},ON);
+  setTimeout(()=>{
+    // CRT switch: the word collapses to a line, the mark opens out of it
+    crt.animate([{transform:'scaleY(1)',opacity:1},{transform:'scaleY(.02)',opacity:.9,offset:.8},{transform:'scaleY(0)',opacity:0}],{duration:260,easing:'cubic-bezier(.6,0,.9,.4)',fill:'forwards'});
+    setTimeout(()=>{st.style.opacity=1;
+      st.animate([{transform:'perspective(900px) scaleY(.02)'},{transform:'perspective(900px) scaleY(1)'}],{duration:300,easing:EZ,fill:'forwards'});
+      // one turn in 3D, around the vertical axis
+      setTimeout(()=>st.animate([{transform:'perspective(900px) rotateY(0deg)'},{transform:'perspective(900px) rotateY(360deg)'}],{duration:950,easing:EIO,fill:'forwards'}),380);
+      setTimeout(()=>fly(sz,x0,y0),380+950+80)},230)},ON);
 }
 function fly(sz,x0,y0){
   const tg=document.querySelector('.brand svg').getBoundingClientRect(),s=tg.width/sz,dx=tg.left+tg.width/2-(x0+sz/2),dy=tg.top+tg.height/2-(y0+sz/2);
   ov.querySelector('.ilab').style.opacity=0;
-  st.animate(st.dataset.led?[{transform:'none',opacity:1},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,opacity:1,offset:.82},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,opacity:0}]:[{transform:'none',color:'#fff'},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,color:'#0A14FF'}],{duration:1050,easing:EIO,fill:'forwards'});
+  st.animate(st.dataset.led?[{transform:'none',opacity:1},{transform:`translate(${dx}px,${dy}px) scale(${s})`,opacity:1,offset:.82},{transform:`translate(${dx}px,${dy}px) scale(${s})`,opacity:0}]:[{transform:'none',color:'#fff'},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,color:'#0A14FF'}],{duration:1050,easing:EIO,fill:'forwards'});
   setTimeout(()=>ov.classList.add('lift'),200);
   setTimeout(()=>document.body.classList.remove('intro-on'),1050);
   setTimeout(()=>{ov.remove();st.remove()},1300);
