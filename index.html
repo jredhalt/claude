@@ -319,7 +319,8 @@ h1.hh-m{display:none}
 .stage3 .ins{display:flex;flex-direction:column;gap:12px;position:relative;z-index:1;width:100%;max-width:300px}
 .stage3 .insl{justify-self:end}.stage3 .insr{justify-self:start}
 .stage3 .goal{cursor:default;display:block;text-align:center;transition:border-color .3s,color .3s}
-.stage3 .goal:hover{border-color:var(--blue);color:var(--blue)}
+.stage3 .goal{transition:background .3s,border-color .3s,color .3s}
+.stage3 .goal:hover{background:var(--blue);border-color:var(--blue);color:#fff}
 .stage3 .wires path{opacity:.45}
 .stage3 .wires path.on{opacity:1}
 .stage3 .hub{width:clamp(160px,14vw,200px)}
