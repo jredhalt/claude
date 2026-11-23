@@ -451,7 +451,7 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 // ---------- intro: N-O-I-S-E spells itself out, the mark lands after the E, then flies to its place ----------
 (()=>{
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-window.INTRO_MS=reduce?0:4550;
+window.INTRO_MS=reduce?0:4800;
 const ov=document.getElementById('intro');
 if(reduce){ov.remove();document.body.classList.remove('intro-on');return}
 const st=document.getElementById('introStar'),cnt=document.getElementById('icount'),word=document.getElementById('iword');
@@ -480,18 +480,26 @@ function start(){
   [4,3,2,1,0].forEach((n,k)=>setTimeout(()=>{txt.textContent='NOISE'.slice(0,n)},DEL+k*55));
   setTimeout(()=>{
     cur.style.animation='none';cur.style.opacity=1;
-    const r=cur.getBoundingClientRect(),blk=document.createElement('i');
-    blk.style.cssText=`position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;background:#fff;z-index:202;box-shadow:0 0 14px rgba(255,255,255,.45);transform-origin:50% 50%`;
-    document.body.appendChild(blk);crt.style.visibility='hidden';
-    const tx=cx-(r.left+r.width/2),ty=cy-(r.top+r.height/2),k=sz*.8/r.height;
-    // block glides to centre, grows, and starts to turn
-    blk.animate([{transform:'perspective(900px) translate(0,0) scale(1) rotateY(0deg)'},
-                 {transform:`perspective(900px) translate(${tx}px,${ty}px) scale(${k}) rotateY(0deg)`,offset:.55},
-                 {transform:`perspective(900px) translate(${tx}px,${ty}px) scale(${k}) rotateY(90deg)`}],{duration:520,easing:'cubic-bezier(.5,0,.75,0)',fill:'forwards'});
-    // edge-on: swap the block for the mark and keep spinning — fast, then settling
-    setTimeout(()=>{blk.remove();st.style.opacity=1;
-      st.animate([{transform:'perspective(900px) rotateY(90deg)'},{transform:'perspective(900px) rotateY(1800deg)'}],{duration:1650,easing:'cubic-bezier(.12,.75,.25,1)',fill:'forwards'});
-      setTimeout(()=>fly(sz,x0,y0),1650)},520)},DEL+5*55+60);
+    const r=cur.getBoundingClientRect();crt.style.visibility='hidden';
+    // the cursor bar shape-shifts into the mark: 16 points slide from the bar's outline to the star's
+    const NS='http://www.w3.org/2000/svg',ov2=document.createElementNS(NS,'svg');ov2.setAttribute('width',W);ov2.setAttribute('height',H);
+    ov2.style.cssText='position:fixed;inset:0;z-index:202;pointer-events:none;filter:drop-shadow(0 0 12px rgba(255,255,255,.45))';
+    ov2.innerHTML='<defs><pattern id="isl" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="3" fill="#fff"/></pattern></defs>';const pth=document.createElementNS(NS,'path');pth.setAttribute('fill','url(#isl)');ov2.appendChild(pth);document.body.appendChild(ov2);
+    const A=[...Array(16)].map((_,i)=>-Math.PI/2+i*Math.PI/8),R=sz/2*.96;
+    const bx=r.left+r.width/2,by=r.top+r.height/2,hw=r.width/2,hh=r.height/2;
+    const P0=A.map(a=>{const c=Math.cos(a),s2=Math.sin(a),t=Math.min(hw/Math.max(1e-6,Math.abs(c)),hh/Math.max(1e-6,Math.abs(s2)));return[bx+c*t,by+s2*t]});
+    const P1=A.map((a,i)=>{const rr=i%2?R*.42:R;return[cx+Math.cos(a)*rr,cy+Math.sin(a)*rr]});
+    const io=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,back=k=>{const c=1.7;return 1+(c+1)*Math.pow(k-1,3)+c*Math.pow(k-1,2)};
+    const M0=performance.now(),MD=720;
+    (function morph(now){const k=Math.min(1,(now-M0)/MD),e=io(k);
+      // points travel to the centre first, then the spikes push out with a little overshoot
+      const sp=back(Math.min(1,Math.max(0,(k-.35)/.65)));
+      const d=P0.map(([x1,y1],i)=>{const mx=x1+(cx-bx)*e,my=y1+(cy-by)*e,[x2,y2]=P1[i],tx=mx+(x2-(x1+cx-bx))*sp,ty=my+(y2-(y1+cy-by))*sp;return(i?'L':'M')+tx.toFixed(1)+' '+ty.toFixed(1)}).join('')+'Z';
+      pth.setAttribute('d',d);
+      if(k<1)requestAnimationFrame(morph);
+      else{ov2.remove();st.style.opacity=1;
+        st.animate([{transform:'perspective(900px) rotateY(0deg)'},{transform:'perspective(900px) rotateY(1800deg)'}],{duration:1700,easing:'cubic-bezier(.3,0,.2,1)',fill:'forwards'});
+        setTimeout(()=>fly(sz,x0,y0),1700)}})(M0)},DEL+5*55+60);
 }
 function fly(sz,x0,y0){
   const tg=document.querySelector('.brand svg').getBoundingClientRect(),s=tg.width/sz,dx=tg.left+tg.width/2-(x0+sz/2),dy=tg.top+tg.height/2-(y0+sz/2);
