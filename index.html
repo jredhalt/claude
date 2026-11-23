@@ -472,8 +472,12 @@ function start(){
   const D=Math.min(2,devicePixelRatio||1),Q=Math.ceil(sz*D),sc=document.createElement('canvas');sc.width=sc.height=Q;const g=sc.getContext('2d');
   const base=document.createElement('canvas');base.width=base.height=Q;const bg=base.getContext('2d');bg.fillStyle='#fff';bg.beginPath();
   for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*Q/2*.96;bg.lineTo(Q/2+Math.cos(a)*r,Q/2+Math.sin(a)*r)}bg.fill();
-  const row=Math.max(3,Math.round(4*D));for(let y=0;y<Q;y+=row){g.drawImage(base,0,y,Q,row-1,0,y,Q,row-1)}
-  st.style.filter='drop-shadow(0 0 10px rgba(255,255,255,.4))';st.innerHTML=`<image x="-10" y="-10" width="20" height="20" href="${sc.toDataURL()}"/>`;st.dataset.led=1;
+  // old-TV look: solid white mark with a slight red/cyan fringe and faint scanlines, not a texture
+  const tint=(c)=>{const t=document.createElement('canvas');t.width=t.height=Q;const tg=t.getContext('2d');tg.drawImage(base,0,0);tg.globalCompositeOperation='source-in';tg.fillStyle=c;tg.fillRect(0,0,Q,Q);return t};
+  const off=Math.max(2,Math.round(Q*.012));g.globalCompositeOperation='screen';
+  g.globalAlpha=.85;g.drawImage(tint('#ff2a6d'),-off,0);g.drawImage(tint('#22e6ff'),off,0);g.globalAlpha=1;g.drawImage(base,0,0);
+  g.globalCompositeOperation='destination-out';g.fillStyle='rgba(0,0,0,.18)';for(let y=0;y<Q;y+=Math.round(3*D))g.fillRect(0,y,Q,Math.max(1,Math.round(D*.8)));g.globalCompositeOperation='source-over';
+  st.style.filter='drop-shadow(0 0 14px rgba(255,255,255,.45))';st.innerHTML=`<image x="-10" y="-10" width="20" height="20" href="${sc.toDataURL()}"/>`;st.dataset.led=1;
   const cv=document.getElementById('ifrag'),x=cv.getContext('2d');cv.width=W*D;cv.height=H*D;x.setTransform(D,0,0,D,0,0);
   const BREAK=1050;
   setTimeout(()=>{
@@ -502,10 +506,14 @@ function start(){
         const delay=f.dist/maxd*200,ko=Math.min(1,Math.max(0,(t-delay)/(OUT-200)));
         const e=eo(ko),ox=f.x+Math.cos(f.ang)*f.sp*e,oy=f.y+Math.sin(f.ang)*f.sp*e,gs=1+(f.grow-1)*e;
         let X=ox,Y=oy,w=f.w*gs,h=f.h*gs;
-        if(t>OUT+HOLD){const ki=eio(Math.min(1,(t-OUT-HOLD)/IN));X=ox+(f.tx-ox)*ki;Y=oy+(f.ty-oy)*ki;w=w+(f.tw-w)*ki;h=h+(f.th-h)*ki}
-        {const z=Math.max(w,h)*1.35;x.drawImage(SPR,X-z/2,Y-z/2,z,z)}}
+        let al=1;
+        if(t>OUT+HOLD){const kr=Math.min(1,(t-OUT-HOLD)/IN),ki=eio(kr);X=ox+(f.tx-ox)*ki;Y=oy+(f.ty-oy)*ki;w=w+(f.tw-w)*ki;h=h+(f.th-h)*ki;al=1-Math.max(0,(kr-.62)/.38)}
+        if(al>0){x.globalAlpha=al;const z=Math.max(w,h)*1.35;x.drawImage(SPR,X-z/2,Y-z/2,z,z)}}
+      // the mark fades up underneath as the fragments arrive, so they melt into it
+      {const kr=(t-OUT-HOLD)/IN;if(kr>.5){const a=Math.min(1,(kr-.5)/.42);x.globalAlpha=a;x.shadowColor='rgba(255,255,255,.45)';x.shadowBlur=14;x.drawImage(sc,x0,y0,sz,sz);x.shadowBlur=0}}
+      x.globalAlpha=1;
       if(t<OUT+HOLD+IN)requestAnimationFrame(shatter);
-      else{x.clearRect(0,0,W,H);st.style.opacity=1;
+      else{st.style.opacity=1;requestAnimationFrame(()=>x.clearRect(0,0,W,H));
         // 3. the assembled mark spins in 3D, then heads for the corner
         st.animate([{transform:'perspective(900px) rotateY(0deg)'},{transform:'perspective(900px) rotateY(1440deg)'}],{duration:1300,easing:'cubic-bezier(.45,0,.2,1)'});
         setTimeout(()=>fly(sz,x0,y0),1300)}})(s0)},BREAK);
