@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NOISE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Pixelify+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Pixelify+Sans:wght@500;600&family=VT323&display=swap" rel="stylesheet">
 <style>
 :root{--paper:#F3F2EE;--ink:#0C0C0E;--grey:#8E8E93;--line:rgba(12,12,14,.12);--blue:#0A14FF;--pad:clamp(20px,4vw,56px);--ease:cubic-bezier(.2,.7,.1,1)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -338,10 +338,20 @@ h1.hh-m{display:none}
 .mf .nw{white-space:nowrap}
 @media (min-width:821px){h1.hh{font-size:clamp(40px,4.1vw,76px)}}
 h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-right:-.2em}
+
+/* loader: CRT blue screen — bitmap type, scanlines, LED dot mark */
+#intro::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,40,.16) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,40,.35) 100%)}
+#icrt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,2vw,26px);color:#fff;font-family:'VT323',ui-monospace,monospace;text-shadow:0 0 12px rgba(255,255,255,.35)}
+#ityp{font-size:clamp(84px,15vw,220px);line-height:.8;letter-spacing:.06em;display:flex;align-items:center;padding-left:.56em}
+#icur{display:inline-block;width:.5em;height:.78em;margin-left:.06em;background:#fff;box-shadow:0 0 12px rgba(255,255,255,.35);animation:icur 1s steps(1) infinite}
+@keyframes icur{50%{opacity:0}}
+#isub{font-size:clamp(18px,1.8vw,26px);letter-spacing:.22em;opacity:0}
+.ilab{font-family:'VT323',ui-monospace,monospace!important;font-size:18px!important;letter-spacing:.12em!important;text-transform:uppercase}
+#iword{display:none!important}
 </style>
 </head>
 <body class="intro-on">
-<div id="intro" aria-hidden="true"><canvas id="ifrag"></canvas><div id="iword"><span class="il"><span>N</span></span><span class="il"><span>O</span></span><span class="il"><span>I</span></span><span class="il"><span>S</span></span><span class="il"><span>E</span></span></div><div class="ilab"><span>Creative studio</span><span id="icount">000</span></div></div>
+<div id="intro" aria-hidden="true"><canvas id="ifrag"></canvas><div id="icrt"><div id="ityp"><span id="itxt"></span><i id="icur"></i></div><div id="isub">PLEASE STAND BY</div></div><div id="iword"><span class="il"><span>N</span></span><span class="il"><span>O</span></span><span class="il"><span>I</span></span><span class="il"><span>S</span></span><span class="il"><span>E</span></span></div><div class="ilab"><span>Creative studio</span><span id="icount">000</span></div></div>
 <svg id="introStar" viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg>
 
 <nav class="nav" id="nav">
@@ -441,68 +451,44 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 // ---------- intro: N-O-I-S-E spells itself out, the mark lands after the E, then flies to its place ----------
 (()=>{
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-window.INTRO_MS=reduce?0:3700;
+window.INTRO_MS=reduce?0:3450;
 const ov=document.getElementById('intro');
 if(reduce){ov.remove();document.body.classList.remove('intro-on');return}
 const st=document.getElementById('introStar'),cnt=document.getElementById('icount'),word=document.getElementById('iword');
 const L=[...word.querySelectorAll('.il')],inner=L.map(e=>e.firstElementChild),FINAL='NOISE',POOL='NOISE#*/+=<>01';
 const EZ='cubic-bezier(.22,1,.36,1)',EIO='cubic-bezier(.76,0,.24,1)';
 function start(){
-  // stop-motion, built from the same fragments as the athlete: the mark bursts into N-O-I-S-E and folds back
-  const FPS=12,W=innerWidth,H=innerHeight,cx=W/2,cy=H/2,U=Math.min(W,H);
-  const sz=Math.min(W,H)*(W<820?.26:.2),x0=cx-sz/2,y0=cy-sz/2;
+  // CRT blue screen: NOISE types out in bitmap type, PLEASE STAND BY, then the mark appears as an LED dot matrix
+  const W=innerWidth,H=innerHeight,cx=W/2,cy=H/2;
+  const sz=Math.min(W,H)*(W<820?.3:.24),x0=cx-sz/2,y0=cy-sz/2;
   st.style.width=st.style.height=sz+'px';st.style.left=x0+'px';st.style.top=y0+'px';
-  inner.forEach((el,i)=>{el.textContent=FINAL[i];el.style.opacity=1});
-  const C=L.map(e=>{const r=e.getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height}});
-  const fs=parseFloat(getComputedStyle(word).fontSize),font=getComputedStyle(word).fontWeight+' '+fs+'px '+getComputedStyle(word).fontFamily;
-  word.style.visibility='hidden';
+  const txt=document.getElementById('itxt'),crt=document.getElementById('icrt'),sub=document.getElementById('isub');
+  const t0=performance.now();
+  (function count(){const k=Math.min(1,(performance.now()-t0)/2700);cnt.textContent='CH 0'+(1+Math.floor(k*2))+'  '+String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
+  'NOISE'.split('').forEach((c,i)=>setTimeout(()=>txt.textContent+=c,260+i*150));
+  setTimeout(()=>sub.style.opacity=1,260+5*150+180);
+  // the mark as an LED matrix: square cells sized by how much of the star covers them
   const cv=document.getElementById('ifrag'),D=Math.min(2,devicePixelRatio||1),x=cv.getContext('2d');cv.width=W*D;cv.height=H*D;x.setTransform(D,0,0,D,0,0);
-  // sprite: a tiny eight-point star, same as the hero particles
-  const sp=document.createElement('canvas'),SP=32;sp.width=sp.height=SP;{const g=sp.getContext('2d');g.fillStyle='#fff';g.beginPath();
-    for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.38:1)*SP/2;g.lineTo(SP/2+Math.cos(a)*r,SP/2+Math.sin(a)*r)}g.fill()}
-  // sample a shape into fragments (points relative to its centre)
-  const STEP=Math.max(3.2,fs/26),dot=STEP*1.35;
-  function sample(draw,w,h,step=STEP){const c=document.createElement('canvas');c.width=Math.ceil(w);c.height=Math.ceil(h);const g=c.getContext('2d');draw(g);
-    const d=g.getImageData(0,0,c.width,c.height).data,pts=[];
-    for(let yy=0;yy<c.height;yy+=step)for(let xx=0;xx<c.width;xx+=step){const px=xx+(Math.random()-.5)*step*.9,py=yy+(Math.random()-.5)*step*.9,ix=Math.round(px),iy=Math.round(py);
-      if(ix<0||iy<0||ix>=c.width||iy>=c.height)continue;if(d[(iy*c.width+ix)*4+3]>110)pts.push({x:px-w/2,y:py-h/2,s:.55+Math.random()*.75,a:.75+Math.random()*.25})}return pts}
-  const LP=C.map((c,i)=>sample(g=>{g.font=font;g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';g.fillText(FINAL[i],c.w/2,c.h/2+fs*.04)},c.w,c.h));
-  const SPts=sample(g=>{g.fillStyle='#fff';g.beginPath();for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*sz/2;g.lineTo(sz/2+Math.cos(a)*r,sz/2+Math.sin(a)*r)}g.fill()},sz,sz,Math.max(3,sz/34));
-  const rnd=a=>(Math.random()-.5)*a,ease=k=>1-Math.pow(1-k,3),cl=(v,a,b)=>Math.min(b,Math.max(a,v));
-  const pile=()=>C.map(()=>({x:rnd(U*.26),y:rnd(U*.22),r:rnd(110),s:1.05+Math.random()*.4}));
-  const PA=pile(),PB=pile(),R0=C.map(()=>rnd(160));
-  const T={grow:380,burst:[620,860],swap:1180,word:[1440,1700],fold:[2200,2420],star:2420,fly:2620};
-  function drawSet(pts,ox,oy,rot,sc,sx=1,sy=1,alpha=1){if(alpha<=0||sc<=0)return;const c=Math.cos(rot*Math.PI/180),s=Math.sin(rot*Math.PI/180);
-    for(const p of pts){const lx=(p.x+rnd(.9))*sc*sx,ly=(p.y+rnd(.9))*sc*sy,px=ox+lx*c-ly*s,py=oy+lx*s+ly*c,z=dot*p.s*Math.max(.55,sc);
-      x.globalAlpha=p.a*alpha;x.drawImage(sp,px-z/2,py-z/2,z,z)}}
-  const t0=performance.now();let last=-1,flown=false;
-  (function count(){const k=Math.min(1,(performance.now()-t0)/2600);cnt.textContent=String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
-  (function frame(now){if(flown)return;requestAnimationFrame(frame);
-    const t=Math.floor((now-t0)/(1000/FPS))*(1000/FPS);if(t===last)return;last=t;
-    x.clearRect(0,0,W,H);
-    // the mark
-    if(t<T.burst[0]||t>=T.star){let ss=1,sr=rnd(5),sx=1,sy=1;
-      if(t<T.grow){const k=ease(t/T.grow);ss=k;sr+=(1-k)*-160}
-      if(t>=T.star&&t<T.star+90){sx=1.5;sy=.6}
-      drawSet(SPts,cx+rnd(3),cy+rnd(3),sr,ss,sx,sy)}
-    // the letters
-    C.forEach((c,i)=>{const A=PA[i],B=PB[i],dx=cx-c.x,dy=cy-c.y;let k,X,Y,r,s,sx=1,sy=1,al=1;
-      if(t<T.burst[0])return;
-      if(t<T.burst[1]){k=ease((t-T.burst[0])/(T.burst[1]-T.burst[0]));X=dx+A.x*k;Y=dy+A.y*k;r=R0[i]*(1-k)+A.r*k;s=.2+(A.s-.2)*k}
-      else if(t<T.swap){X=dx+A.x+rnd(4);Y=dy+A.y+rnd(4);r=A.r+rnd(4);s=A.s}
-      else if(t<T.word[0]){X=dx+B.x+rnd(4);Y=dy+B.y+rnd(4);r=B.r+rnd(4);s=B.s}
-      else if(t<T.word[1]){k=ease((t-T.word[0])/(T.word[1]-T.word[0]));X=(dx+B.x)*(1-k);Y=(dy+B.y)*(1-k);r=B.r*(1-k);s=B.s+(1-B.s)*k}
-      else if(t<T.fold[0]){X=rnd(3);Y=rnd(3);r=rnd(3);s=1}
-      else if(t<T.fold[1]){k=ease((t-T.fold[0])/(T.fold[1]-T.fold[0]));X=dx*k;Y=dy*k+rnd(3);r=rnd(6);s=1-.75*k;sx=1+.5*k;sy=1-.4*k}
-      else return;
-      drawSet(LP[i],c.x+X,c.y+Y,r,s,sx,sy,al)});
-    if(t>=T.fly&&!flown){flown=true;x.clearRect(0,0,W,H);st.style.opacity=1;st.style.transform='none';fly(sz,x0,y0)}
-  })(t0);
+  const N=W<820?19:23,cell=sz/N,pts=[];for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*sz/2;pts.push([Math.cos(a)*r,Math.sin(a)*r])}
+  const inS=(px,py)=>{let c=false;for(let i=0,j=15;i<16;j=i++){const[xi,yi]=pts[i],[xj,yj]=pts[j];if((yi>py)!==(yj>py)&&px<(xj-xi)*(py-yi)/(yj-yi)+xi)c=!c}return c};
+  const cells=[];for(let r=0;r<N;r++)for(let q=0;q<N;q++){let hit=0;const lx=-sz/2+q*cell,ly=-sz/2+r*cell;
+    for(let a=0;a<4;a++)for(let b=0;b<4;b++)if(inS(lx+(a+.5)*cell/4,ly+(b+.5)*cell/4))hit++;
+    if(hit)cells.push({x:cx+lx+cell/2,y:cy+ly+cell/2,c:hit/16,d:Math.hypot(q-N/2,r-N/2)})}
+  const ON=1700;
+  setTimeout(()=>{crt.style.visibility='hidden';const s0=performance.now();
+    (function led(now){const t=now-s0;x.clearRect(0,0,W,H);
+      x.shadowColor='rgba(255,255,255,.55)';x.shadowBlur=cell*.6;x.fillStyle='#fff';
+      // light up from the centre out, a ring at a time
+      for(const c of cells){const on=t>c.d*22;if(!on)continue;const z=cell*(.28+.52*c.c);x.fillRect(c.x-z/2,c.y-z/2,z,z)}
+      if(t<N*12+280)requestAnimationFrame(led);
+      else{// hand the LED matrix itself to the flying mark, so it travels as dots and settles into the logo
+        const lc=document.createElement('canvas');lc.width=lc.height=Math.ceil(sz*D);const g=lc.getContext('2d');g.drawImage(cv,x0*D,y0*D,sz*D,sz*D,0,0,sz*D,sz*D);
+        lc.style.cssText='width:100%;height:100%;display:block';st.innerHTML='';st.appendChild(lc);x.clearRect(0,0,W,H);st.style.opacity=1;st.dataset.led=1;fly(sz,x0,y0)}})(s0)},ON);
 }
 function fly(sz,x0,y0){
   const tg=document.querySelector('.brand svg').getBoundingClientRect(),s=tg.width/sz,dx=tg.left+tg.width/2-(x0+sz/2),dy=tg.top+tg.height/2-(y0+sz/2);
   ov.querySelector('.ilab').style.opacity=0;
-  st.animate([{transform:'none',color:'#fff'},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,color:'#0A14FF'}],{duration:1050,easing:EIO,fill:'forwards'});
+  st.animate(st.dataset.led?[{transform:'none',opacity:1},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,opacity:1,offset:.82},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,opacity:0}]:[{transform:'none',color:'#fff'},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,color:'#0A14FF'}],{duration:1050,easing:EIO,fill:'forwards'});
   setTimeout(()=>ov.classList.add('lift'),200);
   setTimeout(()=>document.body.classList.remove('intro-on'),1050);
   setTimeout(()=>{ov.remove();st.remove()},1300);
