@@ -345,13 +345,13 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 #ityp{font-size:clamp(84px,15vw,220px);line-height:.8;letter-spacing:.06em;display:flex;align-items:center;padding-left:.56em}
 #icur{display:inline-block;width:.5em;height:.78em;margin-left:.06em;background:#fff;box-shadow:0 0 12px rgba(255,255,255,.35);animation:icur 1s steps(1) infinite}
 @keyframes icur{50%{opacity:0}}
-#isub{font-size:clamp(18px,1.8vw,26px);letter-spacing:.22em;opacity:0}
+
 .ilab{font-family:'VT323',ui-monospace,monospace!important;font-size:18px!important;letter-spacing:.12em!important;text-transform:uppercase}
 #iword{display:none!important}
 </style>
 </head>
 <body class="intro-on">
-<div id="intro" aria-hidden="true"><canvas id="ifrag"></canvas><div id="icrt"><div id="ityp"><span id="itxt"></span><i id="icur"></i></div><div id="isub">PLEASE STAND BY</div></div><div id="iword"><span class="il"><span>N</span></span><span class="il"><span>O</span></span><span class="il"><span>I</span></span><span class="il"><span>S</span></span><span class="il"><span>E</span></span></div><div class="ilab"><span>Creative studio</span><span id="icount">000</span></div></div>
+<div id="intro" aria-hidden="true"><canvas id="ifrag"></canvas><div id="icrt"><div id="ityp"><span id="itxt"></span><i id="icur"></i></div></div><div id="iword"><span class="il"><span>N</span></span><span class="il"><span>O</span></span><span class="il"><span>I</span></span><span class="il"><span>S</span></span><span class="il"><span>E</span></span></div><div class="ilab"><span>Creative studio</span><span id="icount">000</span></div></div>
 <svg id="introStar" viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg>
 
 <nav class="nav" id="nav">
@@ -451,7 +451,7 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 // ---------- intro: N-O-I-S-E spells itself out, the mark lands after the E, then flies to its place ----------
 (()=>{
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-window.INTRO_MS=reduce?0:3450;
+window.INTRO_MS=reduce?0:3250;
 const ov=document.getElementById('intro');
 if(reduce){ov.remove();document.body.classList.remove('intro-on');return}
 const st=document.getElementById('introStar'),cnt=document.getElementById('icount'),word=document.getElementById('iword');
@@ -462,28 +462,24 @@ function start(){
   const W=innerWidth,H=innerHeight,cx=W/2,cy=H/2;
   const sz=Math.min(W,H)*(W<820?.3:.24),x0=cx-sz/2,y0=cy-sz/2;
   st.style.width=st.style.height=sz+'px';st.style.left=x0+'px';st.style.top=y0+'px';
-  const txt=document.getElementById('itxt'),crt=document.getElementById('icrt'),sub=document.getElementById('isub');
+  const txt=document.getElementById('itxt'),crt=document.getElementById('icrt');
   const t0=performance.now();
   (function count(){const k=Math.min(1,(performance.now()-t0)/2700);cnt.textContent='CH 0'+(1+Math.floor(k*2))+'  '+String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
   'NOISE'.split('').forEach((c,i)=>setTimeout(()=>txt.textContent+=c,260+i*150));
-  setTimeout(()=>sub.style.opacity=1,260+5*150+180);
-  // the mark as an LED matrix: square cells sized by how much of the star covers them
-  const cv=document.getElementById('ifrag'),D=Math.min(2,devicePixelRatio||1),x=cv.getContext('2d');cv.width=W*D;cv.height=H*D;x.setTransform(D,0,0,D,0,0);
-  const N=W<820?19:23,cell=sz/N,pts=[];for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*sz/2;pts.push([Math.cos(a)*r,Math.sin(a)*r])}
-  const inS=(px,py)=>{let c=false;for(let i=0,j=15;i<16;j=i++){const[xi,yi]=pts[i],[xj,yj]=pts[j];if((yi>py)!==(yj>py)&&px<(xj-xi)*(py-yi)/(yj-yi)+xi)c=!c}return c};
-  const cells=[];for(let r=0;r<N;r++)for(let q=0;q<N;q++){let hit=0;const lx=-sz/2+q*cell,ly=-sz/2+r*cell;
-    for(let a=0;a<4;a++)for(let b=0;b<4;b++)if(inS(lx+(a+.5)*cell/4,ly+(b+.5)*cell/4))hit++;
-    if(hit)cells.push({x:cx+lx+cell/2,y:cy+ly+cell/2,c:hit/16,d:Math.hypot(q-N/2,r-N/2)})}
-  const ON=1700;
-  setTimeout(()=>{crt.style.visibility='hidden';const s0=performance.now();
-    (function led(now){const t=now-s0;x.clearRect(0,0,W,H);
-      x.shadowColor='rgba(255,255,255,.55)';x.shadowBlur=cell*.6;x.fillStyle='#fff';
-      // light up from the centre out, a ring at a time
-      for(const c of cells){const on=t>c.d*22;if(!on)continue;const z=cell*(.28+.52*c.c);x.fillRect(c.x-z/2,c.y-z/2,z,z)}
-      if(t<N*12+280)requestAnimationFrame(led);
-      else{// hand the LED matrix itself to the flying mark, so it travels as dots and settles into the logo
-        const lc=document.createElement('canvas');lc.width=lc.height=Math.ceil(sz*D);const g=lc.getContext('2d');g.drawImage(cv,x0*D,y0*D,sz*D,sz*D,0,0,sz*D,sz*D);
-        lc.style.cssText='width:100%;height:100%;display:block';st.innerHTML='';st.appendChild(lc);x.clearRect(0,0,W,H);st.style.opacity=1;st.dataset.led=1;fly(sz,x0,y0)}})(s0)},ON);
+  // the mark: its exact shape, filled with live TV static
+  const D=Math.min(2,devicePixelRatio||1),sc=document.createElement('canvas'),Q=Math.ceil(sz*D);sc.width=sc.height=Q;sc.style.cssText='width:100%;height:100%;display:block';
+  const g=sc.getContext('2d'),pts=[];for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*Q/2;pts.push([Q/2+Math.cos(a)*r,Q/2+Math.sin(a)*r])}
+  const nz=document.createElement('canvas'),NQ=Math.ceil(Q/(2.2*D));nz.width=nz.height=NQ;const ng=nz.getContext('2d');
+  function paint(){const d=ng.createImageData(NQ,NQ),p=d.data;for(let i=0;i<p.length;i+=4){const r=Math.random(),v=r<.3?120+r*300:205+Math.random()*50;p[i]=v;p[i+1]=v;p[i+2]=Math.min(255,v+10);p[i+3]=255}ng.putImageData(d,0,0);
+    g.clearRect(0,0,Q,Q);g.save();g.beginPath();pts.forEach(([u,v],i)=>i?g.lineTo(u,v):g.moveTo(u,v));g.closePath();g.clip();g.imageSmoothingEnabled=false;g.drawImage(nz,0,0,Q,Q);g.restore()}
+  // the mark element is an SVG, so the static goes in as an <image> refreshed each frame
+  st.style.filter='drop-shadow(0 0 10px rgba(255,255,255,.35))';st.innerHTML='<image x="-10" y="-10" width="20" height="20"/>';const im=st.firstChild;st.dataset.led=1;
+  (function tv(){if(!document.body.contains(st))return;paint();im.setAttribute('href',sc.toDataURL());setTimeout(tv,70)})();
+  const ON=1250;
+  setTimeout(()=>{crt.style.visibility='hidden';st.style.opacity=1;
+    // one clean spin in place, then up to the corner
+    st.animate([{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],{duration:760,easing:EIO});
+    setTimeout(()=>fly(sz,x0,y0),900)},ON);
 }
 function fly(sz,x0,y0){
   const tg=document.querySelector('.brand svg').getBoundingClientRect(),s=tg.width/sz,dx=tg.left+tg.width/2-(x0+sz/2),dy=tg.top+tg.height/2-(y0+sz/2);
