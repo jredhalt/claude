@@ -480,27 +480,30 @@ function start(){
   st.style.filter='drop-shadow(0 0 14px rgba(255,255,255,.45))';st.innerHTML=`<image x="-10" y="-10" width="20" height="20" href="${sc.toDataURL()}"/>`;st.dataset.led=1;
   const cv=document.getElementById('ifrag'),x=cv.getContext('2d');cv.width=W*D;cv.height=H*D;x.setTransform(D,0,0,D,0,0);
   const BREAK=1050;
+  // build every fragment ahead of time (during the hold) so the break itself costs nothing
+  let F,T,SPR,sc2;
   setTimeout(()=>{
     // 2. sample the word into fragments (short scanline bars)
     const tr=typ.getBoundingClientRect(),cs=getComputedStyle(typ),fs=parseFloat(cs.fontSize);
     const oc=document.createElement('canvas');oc.width=Math.ceil(tr.width);oc.height=Math.ceil(tr.height);const og=oc.getContext('2d');
     og.font=`${fs}px ${cs.fontFamily}`;og.letterSpacing=cs.letterSpacing;og.fillStyle='#fff';og.textBaseline='middle';og.textAlign='center';og.fillText('NOISE',oc.width/2,oc.height/2+fs*.02);
-    const d=og.getImageData(0,0,oc.width,oc.height).data,cell=Math.max(4,fs/22),F=[];
+    const d=og.getImageData(0,0,oc.width,oc.height).data,cell=Math.max(4,fs/22);F=[];
     for(let yy=0;yy<oc.height;yy+=cell)for(let xx=0;xx<oc.width;xx+=cell){const ix=Math.floor(xx+cell/2),iy=Math.floor(yy+cell/2);if(ix<oc.width&&iy<oc.height&&d[(iy*oc.width+ix)*4+3]>120){
       const px=tr.left+xx+cell/2,py=tr.top+yy+cell/2,dx=px-cx,dy=py-cy,dist=Math.hypot(dx,dy),ang=Math.random()<.55?Math.atan2(dy,dx)+(Math.random()-.5)*1.2:Math.random()*Math.PI*2;
       F.push({rs:(Math.random()<.5?-1:1)*(2+Math.random()*7),r0:Math.random()*6.28,tw:Math.random()*6.28,tws:6+Math.random()*10,dr:.06+Math.random()*.12,x:px,y:py,dist,ang,sp:Math.pow(Math.random(),.7)*U*.62+20,grow:1.4+Math.random()*2.2,w:cell*.9,h:cell*.62})}}
     // star targets for the implode
-    const T=[];const pts=[];for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*sz/2*.96;pts.push([Math.cos(a)*r,Math.sin(a)*r])}
+    T=[];const pts=[];for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*sz/2*.96;pts.push([Math.cos(a)*r,Math.sin(a)*r])}
     const inS=(px,py)=>{let c=false;for(let i=0,j=15;i<16;j=i++){const[xi,yi]=pts[i],[xj,yj]=pts[j];if((yi>py)!==(yj>py)&&px<(xj-xi)*(py-yi)/(yj-yi)+xi)c=!c}return c};
-    const sc2=sz/Math.sqrt(F.length*1.1);for(let yy=-sz/2;yy<sz/2;yy+=sc2)for(let xx=-sz/2;xx<sz/2;xx+=sc2)if(inS(xx,yy))T.push([cx+xx,cy+yy]);
+    sc2=sz/Math.sqrt(F.length*1.1);for(let yy=-sz/2;yy<sz/2;yy+=sc2)for(let xx=-sz/2;xx<sz/2;xx+=sc2)if(inS(xx,yy))T.push([cx+xx,cy+yy]);
     T.sort(()=>Math.random()-.5);F.forEach((f,i)=>{const t=T[i%T.length];f.tx=t[0];f.ty=t[1];f.tw=sc2*.95;f.th=sc2*.62});
     // fragments are tiny copies of the mark
-    const SPR=document.createElement('canvas');SPR.width=SPR.height=48;{const sg=SPR.getContext('2d');sg.fillStyle='#fff';sg.shadowColor='rgba(255,255,255,.6)';sg.shadowBlur=4;sg.beginPath();
+    SPR=document.createElement('canvas');SPR.width=SPR.height=48;{const sg=SPR.getContext('2d');sg.fillStyle='#fff';sg.shadowColor='rgba(255,255,255,.6)';sg.shadowBlur=4;sg.beginPath();
       for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*20;sg.lineTo(24+Math.cos(a)*r,24+Math.sin(a)*r)}sg.fill()}
-    crt.style.visibility='hidden';
-    const maxd=Math.max(...F.map(f=>f.dist)),OUT=600,HOLD=0,IN=760,s0=performance.now();
+  },680);
+  setTimeout(()=>{
+    const maxd=F.reduce((m,f)=>Math.max(m,f.dist),1),OUT=600,HOLD=0,IN=760,s0=performance.now();
     const eo=k=>1-Math.pow(1-k,3),eio=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
-    (function shatter(now){const t=now-s0;x.clearRect(0,0,W,H);
+    (function shatter(now){const t=Math.max(0,now-s0);x.clearRect(0,0,W,H);
       for(const f of F){
         // the ripple starts at the centre: inner fragments break first
         const delay=f.dist/maxd*200,ko=Math.min(1,Math.max(0,(t-delay)/(OUT-200)));
@@ -513,10 +516,11 @@ function start(){
           const sw=(1-ki)*1.1*(f.rs>0?1:-1),mx=ox+(f.tx-ox)*ki-cx,my=oy+(f.ty-oy)*ki-cy;X=cx+mx*Math.cos(sw)-my*Math.sin(sw);Y=cy+mx*Math.sin(sw)+my*Math.cos(sw);
           w=w+(f.tw-w)*ki;h=h+(f.th-h)*ki;al=1-Math.max(0,(kr-.62)/.38)}
         const ts=t/1000,tw=.78+.22*Math.sin(ts*f.tws+f.tw);
-        if(al>0){x.globalAlpha=al*(.7+.3*tw);const z=Math.max(w,h)*1.35*tw;x.save();x.translate(X,Y);x.rotate(f.r0+ts*f.rs);x.drawImage(SPR,-z/2,-z/2,z,z);x.restore()}}
+        if(al>0){x.globalAlpha=al*(.7+.3*tw)*Math.min(1,t/160);const z=Math.max(w,h)*1.35*tw;x.save();x.translate(X,Y);x.rotate(f.r0+ts*f.rs);x.drawImage(SPR,-z/2,-z/2,z,z);x.restore()}}
       // the mark fades up underneath as the fragments arrive, so they melt into it
       {const kr=(t-OUT-HOLD)/IN;if(kr>.5){const a=Math.min(1,(kr-.5)/.42);x.globalAlpha=a;x.shadowColor='rgba(255,255,255,.45)';x.shadowBlur=14;x.drawImage(sc,x0,y0,sz,sz);x.shadowBlur=0}}
       x.globalAlpha=1;
+      if(!crt.dataset.out){crt.dataset.out=1;crt.animate([{opacity:1},{opacity:0}],{duration:160,easing:'ease-out',fill:'forwards'})}
       if(t<OUT+HOLD+IN)requestAnimationFrame(shatter);
       else{st.style.opacity=1;requestAnimationFrame(()=>x.clearRect(0,0,W,H));
         // 3. the assembled mark spins in 3D, then heads for the corner
