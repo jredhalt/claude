@@ -30,7 +30,6 @@ a{color:inherit;text-decoration:none}
 /* intro */
 #intro{position:fixed;inset:0;z-index:200;background:var(--blue);clip-path:inset(0 0 0 0);transition:clip-path 1s cubic-bezier(.76,0,.24,1)}
 #intro.lift{clip-path:inset(0 0 100% 0)}
-#istatic{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;mix-blend-mode:screen;opacity:.16;pointer-events:none}
 #iword{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:clamp(76px,15vw,230px);letter-spacing:-.05em;line-height:1.1}
 #iword .il{display:inline-block;text-align:center}
 #iword .il>span{display:block;opacity:0}
@@ -341,7 +340,7 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 </style>
 </head>
 <body class="intro-on">
-<div id="intro" aria-hidden="true"><canvas id="istatic"></canvas><div id="iword"><span class="il"><span>N</span></span><span class="il"><span>O</span></span><span class="il"><span>I</span></span><span class="il"><span>S</span></span><span class="il"><span>E</span></span></div><div class="ilab"><span>Creative studio</span><span id="icount">000</span></div></div>
+<div id="intro" aria-hidden="true"><div id="iword"><span class="il"><span>N</span></span><span class="il"><span>O</span></span><span class="il"><span>I</span></span><span class="il"><span>S</span></span><span class="il"><span>E</span></span></div><div class="ilab"><span>Creative studio</span><span id="icount">000</span></div></div>
 <svg id="introStar" viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg>
 
 <nav class="nav" id="nav">
@@ -447,15 +446,11 @@ if(reduce){ov.remove();document.body.classList.remove('intro-on');return}
 const st=document.getElementById('introStar'),cnt=document.getElementById('icount'),word=document.getElementById('iword');
 const L=[...word.querySelectorAll('.il')],inner=L.map(e=>e.firstElementChild),FINAL='NOISE',POOL='NOISE#*/+=<>01';
 const EZ='cubic-bezier(.22,1,.36,1)',EIO='cubic-bezier(.76,0,.24,1)';
-// TV static over the blue: coarse grain, redrawn ~24fps; bursts on the cut
-const sc=document.getElementById('istatic'),sg=sc.getContext('2d');let burst=0,sOn=true;
-function sz(){const k=innerWidth<820?3:4;sc.width=Math.ceil(innerWidth/k);sc.height=Math.ceil(innerHeight/k)}sz();
-let sl=0;(function noise(now){if(!sOn)return;requestAnimationFrame(noise);if(now-sl<42)return;sl=now;
-  const w=sc.width,h=sc.height,d=sg.createImageData(w,h),p=d.data,amp=burst>0?1:.75;
-  for(let i=0;i<p.length;i+=4){const v=Math.random()<.5?0:255*Math.random()*amp;p[i]=p[i+1]=p[i+2]=v;p[i+3]=255}
-  // occasional horizontal tear lines
-  for(let r=0;r<2;r++){const y=Math.floor(Math.random()*h),o=y*w*4;for(let x=0;x<w;x++){const j=o+x*4;p[j]=p[j+1]=p[j+2]=Math.random()<.7?255:120}}
-  sg.putImageData(d,0,0);sc.style.opacity=burst>0?.42:.16;burst=Math.max(0,burst-1)})(0);
+// quiet grain inside the letters only: white with fine blue-grey specks, drifting slowly
+(()=>{const n=160,c=document.createElement('canvas');c.width=c.height=n;const g=c.getContext('2d'),d=g.createImageData(n,n),p=d.data;
+  for(let i=0;i<p.length;i+=4){const r=Math.random(),v=r<.22?205+r*160:255;p[i]=v;p[i+1]=v;p[i+2]=Math.min(255,v+8);p[i+3]=255}g.putImageData(d,0,0);
+  const st=document.createElement('style');st.textContent=`#iword .il>span{color:transparent;background:url(${c.toDataURL()}) 0 0/160px 160px;-webkit-background-clip:text;background-clip:text;animation:igrain 9s linear infinite}
+  @keyframes igrain{to{background-position:160px 320px}}@media (prefers-reduced-motion:reduce){#iword .il>span{animation:none}}`;document.head.appendChild(st)})();
 function start(){
   // lock each slot to its final glyph width so the scramble never shifts the word
   L.forEach(e=>{e.style.width=e.getBoundingClientRect().width+'px'});
@@ -465,7 +460,7 @@ function start(){
       let n=0;const iv=setInterval(()=>{if(++n>4){clearInterval(iv);el.textContent=FINAL[i];return}el.textContent=POOL[Math.floor(Math.random()*POOL.length)]},SCR)},150+i*STEP)});
   const locked=150+4*STEP+5*SCR+40,out=locked+HOLD;
   // hard cut: the word vanishes and the mark is there, same frame
-  setTimeout(()=>{burst=4;word.style.visibility='hidden';
+  setTimeout(()=>{word.style.visibility='hidden';
     const sz=Math.min(innerWidth,innerHeight)*(innerWidth<820?.26:.2),x0=(innerWidth-sz)/2,y0=(innerHeight-sz)/2;
     st.style.width=st.style.height=sz+'px';st.style.left=x0+'px';st.style.top=y0+'px';st.style.opacity=1;
     setTimeout(()=>fly(sz,x0,y0),520)},out);
@@ -476,9 +471,9 @@ function fly(sz,x0,y0){
   st.animate([{transform:'none',color:'#fff'},{transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(${s})`,color:'#0A14FF'}],{duration:1050,easing:EIO,fill:'forwards'});
   setTimeout(()=>ov.classList.add('lift'),200);
   setTimeout(()=>document.body.classList.remove('intro-on'),1050);
-  setTimeout(()=>{sOn=false;ov.remove();st.remove()},1300);
+  setTimeout(()=>{ov.remove();st.remove()},1300);
 }
-ov.addEventListener('click',()=>{window.INTRO_MS=0;ov.classList.add('lift');document.body.classList.remove('intro-on');setTimeout(()=>{sOn=false;ov.remove();st.remove()},900)},{once:true});
+ov.addEventListener('click',()=>{window.INTRO_MS=0;ov.classList.add('lift');document.body.classList.remove('intro-on');setTimeout(()=>{ov.remove();st.remove()},900)},{once:true});
 (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>requestAnimationFrame(start));
 })();
 </script>
