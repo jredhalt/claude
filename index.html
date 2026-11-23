@@ -519,7 +519,7 @@ hero.addEventListener('pointerleave',()=>{mx=my=-999});
 function push(p,px,py){if(mx>-900){const ex=px-mx,ey=py-my,d=Math.hypot(ex,ey);if(d<100){const f=(1-d/100)*28;p.dx+=(ex/(d||1)*f-p.dx)*.2;p.dy+=(ey/(d||1)*f-p.dy)*.2;return}}p.dx*=.9;p.dy*=.9}
 function draw(now){requestAnimationFrame(draw);
   const hr=hero.getBoundingClientRect();if(hr.bottom<0)return;
-  const P=clamp(-hr.top/(hr.height-H),0,1),T=Math.max(0,(now-t0)/1000),sc=A.h,k0=W<820?.82:Math.max(.95,Math.min(2.4,sc/400));
+  const P=clamp(-hr.top/(hr.height-H),0,1),T=Math.max(0,(now-t0)/1000),sc=A.h,k0=W<820?.82:Math.max(.95,Math.min(1.45,sc/540));
   // copy choreography
   const f1=clamp(P/.22,0,1);hcopy.style.opacity=1-f1;hcopy.style.transform=`translateY(${-f1*40}px)`;
   fade.forEach(e=>e.style.opacity=e.classList.contains('in')?1-clamp(P/.15,0,1):'');
@@ -587,7 +587,8 @@ let live=[];
   setTimeout(loop,170)})();
 }
 const after=document.querySelector('.after'),hc=document.querySelector('.hcopy');
-
+fx(document.querySelector('#with .mf'),()=>parseFloat(after.style.opacity||0)>.4);
+fx(document.querySelector('h1.hh-d'),()=>!document.body.classList.contains('intro-on')&&parseFloat(getComputedStyle(hc).opacity)>.4&&scrollY<innerHeight*.9);
 })();
 
 // ---------- how we work: everything flows into the studio ----------
