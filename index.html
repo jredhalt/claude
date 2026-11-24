@@ -456,9 +456,10 @@ function start(){
   const SM='cubic-bezier(.65,0,.35,1)';
   // 1. letters rise in, one after another
   // typed out, one character at a time (no cursor)
-  LS.forEach((e,i)=>{e.style.visibility='hidden';setTimeout(()=>e.style.visibility='visible',260+i*150)});
+  // smooth roll-out: each letter eases up and in, on the compositor (no timers, no layout work)
+  LS.forEach((e,i)=>{e.style.willChange='transform,opacity';e.animate([{opacity:0,transform:'translate3d(0,.12em,0)'},{opacity:1,transform:'translate3d(0,0,0)'}],{duration:420,delay:200+i*95,easing:'cubic-bezier(.22,1,.36,1)',fill:'both'})});
   // 2. fold to the centre
-  const FOLD=260+5*150+380;
+  const FOLD=200+4*95+420+420;
   setTimeout(()=>{
     LS.forEach((e,i)=>{const r=e.getBoundingClientRect(),dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2);
       e.animate([{transform:'none',opacity:1},{transform:`translate(${dx}px,${dy}px) scale(.15)`,opacity:0}],{duration:620,easing:SM,fill:'forwards'})});
