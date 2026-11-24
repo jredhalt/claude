@@ -451,81 +451,39 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 // ---------- intro: N-O-I-S-E spells itself out, the mark lands after the E, then flies to its place ----------
 (()=>{
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-window.INTRO_MS=reduce?0:4700;
+window.INTRO_MS=reduce?0:4500;
 const ov=document.getElementById('intro');
 if(reduce){ov.remove();document.body.classList.remove('intro-on');return}
 const st=document.getElementById('introStar'),cnt=document.getElementById('icount'),word=document.getElementById('iword');
 const L=[...word.querySelectorAll('.il')],inner=L.map(e=>e.firstElementChild),FINAL='NOISE',POOL='NOISE#*/+=<>01';
 const EZ='cubic-bezier(.22,1,.36,1)',EIO='cubic-bezier(.76,0,.24,1)';
 function start(){
-  // NOISE opens out from the centre, shatters into scanline fragments that rush outward, then they implode into the mark
+  // NOISE resolves, then folds into its centre and the mark opens out of that point: one continuous move
   const W=innerWidth,H=innerHeight,cx=W/2,cy=H/2,U=Math.min(W,H);
   const sz=U*(W<820?.3:.24),x0=cx-sz/2,y0=cy-sz/2;
   st.style.width=st.style.height=sz+'px';st.style.left=x0+'px';st.style.top=y0+'px';
-  const txt=document.getElementById('itxt'),crt=document.getElementById('icrt'),cur=document.getElementById('icur'),typ=document.getElementById('ityp');
-  cur.style.display='none';typ.style.paddingLeft='0';txt.textContent='NOISE';
+  const txt=document.getElementById('itxt'),cur=document.getElementById('icur'),typ=document.getElementById('ityp');
+  cur.style.display='none';typ.style.paddingLeft='0';
+  txt.innerHTML='NOISE'.split('').map(c=>`<span style="display:inline-block">${c}</span>`).join('');
+  const LS=[...txt.children];
+  // clean solid mark, soft glow, nothing else
+  let d='';for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*9.6;d+=(i?'L':'M')+(Math.cos(a)*r).toFixed(3)+' '+(Math.sin(a)*r).toFixed(3)}
+  st.innerHTML=`<path d="${d}Z" fill="currentColor"/>`;st.style.color='#fff';st.style.filter='drop-shadow(0 0 16px rgba(255,255,255,.35))';delete st.dataset.led;
   const t0=performance.now();
-  (function count(){const k=Math.min(1,(performance.now()-t0)/2600);cnt.textContent='CH 0'+(1+Math.floor(k*2))+'  '+String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
-  // 1. reveal from the centre outward
-  typ.animate([{clipPath:'inset(0 50% 0 50%)'},{clipPath:'inset(0 0% 0 0%)'}],{duration:620,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'});
-  // the mark, CRT-rendered (white, scanlined, soft glow) for the final hand-off
-  const D=Math.min(2,devicePixelRatio||1),Q=Math.ceil(sz*D),sc=document.createElement('canvas');sc.width=sc.height=Q;const g=sc.getContext('2d');
-  const base=document.createElement('canvas');base.width=base.height=Q;const bg=base.getContext('2d');bg.fillStyle='#fff';bg.beginPath();
-  for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*Q/2*.96;bg.lineTo(Q/2+Math.cos(a)*r,Q/2+Math.sin(a)*r)}bg.fill();
-  // old-TV look: solid white mark with a slight red/cyan fringe and faint scanlines, not a texture
-  const tint=(c)=>{const t=document.createElement('canvas');t.width=t.height=Q;const tg=t.getContext('2d');tg.drawImage(base,0,0);tg.globalCompositeOperation='source-in';tg.fillStyle=c;tg.fillRect(0,0,Q,Q);return t};
-  const off=Math.max(2,Math.round(Q*.012));g.globalCompositeOperation='screen';
-  g.drawImage(base,0,0);
-  g.globalCompositeOperation='destination-out';g.fillStyle='rgba(0,0,0,.18)';for(let y=0;y<Q;y+=Math.round(3*D))g.fillRect(0,y,Q,Math.max(1,Math.round(D*.8)));g.globalCompositeOperation='source-over';
-  st.style.filter='drop-shadow(0 0 14px rgba(255,255,255,.45))';st.innerHTML=`<image x="-10" y="-10" width="20" height="20" href="${sc.toDataURL()}"/>`;st.dataset.led=1;
-  const cv=document.getElementById('ifrag'),x=cv.getContext('2d');cv.width=W*D;cv.height=H*D;x.setTransform(D,0,0,D,0,0);
-  const BREAK=1050;
-  // build every fragment ahead of time (during the hold) so the break itself costs nothing
-  let F,T,SPR,sc2;
+  (function count(){const k=Math.min(1,(performance.now()-t0)/2500);cnt.textContent='CH 0'+(1+Math.floor(k*2))+'  '+String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
+  const SM='cubic-bezier(.65,0,.35,1)';
+  // 1. letters rise in, one after another
+  LS.forEach((e,i)=>e.animate([{opacity:0,transform:'translateY(.18em)',filter:'blur(6px)'},{opacity:1,transform:'none',filter:'blur(0)'}],{duration:560,delay:120+i*70,easing:EZ,fill:'both'}));
+  // 2. fold to the centre
+  const FOLD=1250;
   setTimeout(()=>{
-    // 2. sample the word into fragments (short scanline bars)
-    const tr=typ.getBoundingClientRect(),cs=getComputedStyle(typ),fs=parseFloat(cs.fontSize);
-    const oc=document.createElement('canvas');oc.width=Math.ceil(tr.width);oc.height=Math.ceil(tr.height);const og=oc.getContext('2d');
-    og.font=`${fs}px ${cs.fontFamily}`;og.letterSpacing=cs.letterSpacing;og.fillStyle='#fff';og.textBaseline='middle';og.textAlign='center';og.fillText('NOISE',oc.width/2,oc.height/2+fs*.02);
-    const d=og.getImageData(0,0,oc.width,oc.height).data,cell=Math.max(4,fs/22);F=[];
-    for(let yy=0;yy<oc.height;yy+=cell)for(let xx=0;xx<oc.width;xx+=cell){const ix=Math.floor(xx+cell/2),iy=Math.floor(yy+cell/2);if(ix<oc.width&&iy<oc.height&&d[(iy*oc.width+ix)*4+3]>120){
-      const px=tr.left+xx+cell/2,py=tr.top+yy+cell/2,dx=px-cx,dy=py-cy,dist=Math.hypot(dx,dy),ang=Math.random()<.55?Math.atan2(dy,dx)+(Math.random()-.5)*1.2:Math.random()*Math.PI*2;
-      F.push({rs:(Math.random()<.5?-1:1)*(2+Math.random()*7),r0:Math.random()*6.28,tw:Math.random()*6.28,tws:6+Math.random()*10,dr:.06+Math.random()*.12,x:px,y:py,dist,ang,sp:Math.pow(Math.random(),.7)*U*.62+20,grow:1.4+Math.random()*2.2,w:cell*.9,h:cell*.62})}}
-    // star targets for the implode
-    T=[];const pts=[];for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*sz/2*.96;pts.push([Math.cos(a)*r,Math.sin(a)*r])}
-    const inS=(px,py)=>{let c=false;for(let i=0,j=15;i<16;j=i++){const[xi,yi]=pts[i],[xj,yj]=pts[j];if((yi>py)!==(yj>py)&&px<(xj-xi)*(py-yi)/(yj-yi)+xi)c=!c}return c};
-    sc2=sz/Math.sqrt(F.length*1.1);for(let yy=-sz/2;yy<sz/2;yy+=sc2)for(let xx=-sz/2;xx<sz/2;xx+=sc2)if(inS(xx,yy))T.push([cx+xx,cy+yy]);
-    T.sort(()=>Math.random()-.5);F.forEach((f,i)=>{const t=T[i%T.length];f.tx=t[0];f.ty=t[1];f.tw=sc2*.95;f.th=sc2*.62});
-    // fragments are tiny copies of the mark
-    SPR=document.createElement('canvas');SPR.width=SPR.height=48;{const sg=SPR.getContext('2d');sg.fillStyle='#fff';sg.shadowColor='rgba(255,255,255,.6)';sg.shadowBlur=4;sg.beginPath();
-      for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*20;sg.lineTo(24+Math.cos(a)*r,24+Math.sin(a)*r)}sg.fill()}
-  },680);
-  setTimeout(()=>{
-    const maxd=F.reduce((m,f)=>Math.max(m,f.dist),1),OUT=600,HOLD=0,IN=760,s0=performance.now();
-    const eo=k=>1-Math.pow(1-k,3),eio=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
-    (function shatter(now){const t=Math.max(0,now-s0);x.clearRect(0,0,W,H);
-      for(const f of F){
-        // the ripple starts at the centre: inner fragments break first
-        const delay=f.dist/maxd*200,ko=Math.min(1,Math.max(0,(t-delay)/(OUT-200)));
-        // burst out, then keep drifting so nothing ever sits still
-        const e=eo(ko)+Math.max(0,t-delay)/1000*f.dr,ox=f.x+Math.cos(f.ang)*f.sp*e,oy=f.y+Math.sin(f.ang)*f.sp*e,gs=1+(f.grow-1)*Math.min(1,eo(ko));
-        let X=ox,Y=oy,w=f.w*gs,h=f.h*gs;
-        let al=1;
-        if(t>OUT+HOLD){const kr=Math.min(1,(t-OUT-HOLD)/IN),ki=eio(kr);
-          // spiral in: swing round the centre while closing the distance
-          const sw=(1-ki)*1.1*(f.rs>0?1:-1),mx=ox+(f.tx-ox)*ki-cx,my=oy+(f.ty-oy)*ki-cy;X=cx+mx*Math.cos(sw)-my*Math.sin(sw);Y=cy+mx*Math.sin(sw)+my*Math.cos(sw);
-          w=w+(f.tw-w)*ki;h=h+(f.th-h)*ki;al=1-Math.max(0,(kr-.62)/.38)}
-        const ts=t/1000,tw=.78+.22*Math.sin(ts*f.tws+f.tw);
-        if(al>0){x.globalAlpha=al*(.7+.3*tw)*Math.min(1,t/160);const z=Math.max(w,h)*1.35*tw;x.save();x.translate(X,Y);x.rotate(f.r0+ts*f.rs);x.drawImage(SPR,-z/2,-z/2,z,z);x.restore()}}
-      // the mark fades up underneath as the fragments arrive, so they melt into it
-      {const kr=(t-OUT-HOLD)/IN;if(kr>.5){const a=Math.min(1,(kr-.5)/.42);x.globalAlpha=a;x.shadowColor='rgba(255,255,255,.45)';x.shadowBlur=14;x.drawImage(sc,x0,y0,sz,sz);x.shadowBlur=0}}
-      x.globalAlpha=1;
-      if(!crt.dataset.out){crt.dataset.out=1;crt.animate([{opacity:1},{opacity:0}],{duration:160,easing:'ease-out',fill:'forwards'})}
-      if(t<OUT+HOLD+IN)requestAnimationFrame(shatter);
-      else{st.style.opacity=1;requestAnimationFrame(()=>x.clearRect(0,0,W,H));
-        // 3. the assembled mark spins in 3D, then heads for the corner
-        st.animate([{transform:'perspective(900px) rotateY(0deg)'},{transform:'perspective(900px) rotateY(1440deg)'}],{duration:1300,easing:'cubic-bezier(.45,0,.2,1)'});
-        setTimeout(()=>fly(sz,x0,y0),1300)}})(s0)},BREAK);
+    LS.forEach((e,i)=>{const r=e.getBoundingClientRect(),dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2);
+      e.animate([{transform:'none',opacity:1,filter:'blur(0)'},{transform:`translate(${dx}px,${dy}px) scale(.15)`,opacity:0,filter:'blur(4px)'}],{duration:620,easing:SM,fill:'forwards'})});
+    // 3. the mark grows out of the point they meet, turning as it opens
+    setTimeout(()=>{st.style.opacity=1;
+      st.animate([{transform:'perspective(900px) scale(0) rotate(-135deg)'},{transform:'perspective(900px) scale(1) rotate(0deg)'}],{duration:700,easing:'cubic-bezier(.16,1,.3,1)',fill:'forwards'})
+        .finished.then(()=>st.animate([{transform:'perspective(900px) rotateY(0deg)'},{transform:'perspective(900px) rotateY(720deg)'}],{duration:1050,easing:SM,fill:'forwards'}).finished)
+        .then(()=>{st.getAnimations().forEach(a=>a.cancel());st.style.transform='none';fly(sz,x0,y0)})},400)},FOLD);
 }
 function fly(sz,x0,y0){
   const tg=document.querySelector('.brand svg').getBoundingClientRect(),s=tg.width/sz,dx=tg.left+tg.width/2-(x0+sz/2),dy=tg.top+tg.height/2-(y0+sz/2);
