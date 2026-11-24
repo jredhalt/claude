@@ -455,12 +455,13 @@ function start(){
   (function count(){const k=Math.min(1,(performance.now()-t0)/2500);cnt.textContent='CH 0'+(1+Math.floor(k*2))+'  '+String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
   const SM='cubic-bezier(.65,0,.35,1)';
   // 1. letters rise in, one after another
-  LS.forEach((e,i)=>e.animate([{opacity:0,transform:'translateY(.18em)',filter:'blur(6px)'},{opacity:1,transform:'none',filter:'blur(0)'}],{duration:560,delay:120+i*70,easing:EZ,fill:'both'}));
+  // typed out, one character at a time (no cursor)
+  LS.forEach((e,i)=>{e.style.visibility='hidden';setTimeout(()=>e.style.visibility='visible',260+i*150)});
   // 2. fold to the centre
-  const FOLD=1250;
+  const FOLD=260+5*150+380;
   setTimeout(()=>{
     LS.forEach((e,i)=>{const r=e.getBoundingClientRect(),dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2);
-      e.animate([{transform:'none',opacity:1,filter:'blur(0)'},{transform:`translate(${dx}px,${dy}px) scale(.15)`,opacity:0,filter:'blur(4px)'}],{duration:620,easing:SM,fill:'forwards'})});
+      e.animate([{transform:'none',opacity:1},{transform:`translate(${dx}px,${dy}px) scale(.15)`,opacity:0}],{duration:620,easing:SM,fill:'forwards'})});
     // 3. the mark grows out of the point they meet, turning as it opens
     setTimeout(()=>{st.style.opacity=1;
       st.animate([{transform:'perspective(900px) scale(0) rotate(-135deg)'},{transform:'perspective(900px) scale(1) rotate(0deg)'}],{duration:700,easing:'cubic-bezier(.16,1,.3,1)',fill:'forwards'})
