@@ -377,6 +377,12 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 @media (max-width:640px){.pjg{grid-template-columns:1fr}}
 @media (max-width:820px){#how{margin-top:-27vh}}
 .pill{border-radius:10px!important}
+@media (max-width:820px){
+  #ath{opacity:.38}
+  .hcopy{left:var(--pad);right:var(--pad);text-align:center}
+  h1.hh{font-size:clamp(28px,8.1vw,42px)!important;line-height:1!important;letter-spacing:-.05em!important}
+  .hcopy .eyb{background:rgba(243,242,238,.85)}
+}
 </style>
 </head>
 <body class="intro-on">
@@ -544,8 +550,9 @@ function size(){const r=c.getBoundingClientRect();W=r.width;H=r.height;D=Math.mi
   const mob=W<820;
   // whole figure visible on load: fit between the headline and the bottom of the screen
   const hc=document.querySelector('.hcopy');
-  if(mob){const top=hc.getBoundingClientRect().bottom-c.getBoundingClientRect().top,gapT=H*.05,gapB=28;
-    const avail=H-top-gapT-gapB,h=Math.max(160,Math.min((W-24)/.97,avail));A={h,x:(W-h*.95)/2,y:top+gapT+Math.max(0,(avail-h)*.35)}}
+  if(mob){// player fills the screen behind the statement; headline sits front and centre
+    const VH=innerHeight;hc.style.top=Math.max(90,(VH-hc.offsetHeight)/2+10)+'px';
+    const h=Math.min(VH*.7,(W+90)/.9);A={h,x:(W-h*.9)/2-14,y:(VH-h)/2-30}}
   else{// vertically centre the statement; athlete fills the right half, whole figure in frame
     hc.style.top=Math.max(96,(H-hc.offsetHeight)/2+20)+'px';
     const navB=84,pad=Math.max(36,H*.06),h=Math.min(H-navB-pad*1.4,W*.5);
@@ -626,7 +633,7 @@ let live=[];
 }
 const after=document.querySelector('.after'),hc=document.querySelector('.hcopy');
 fx(document.querySelector('#with .mf'),()=>parseFloat(after.style.opacity||0)>.4);
-fx(document.querySelector('h1.hh-d'),()=>!document.body.classList.contains('intro-on')&&parseFloat(getComputedStyle(hc).opacity)>.4&&scrollY<innerHeight*.9);
+fx(document.querySelector('h1.hh-d'),()=>innerWidth>820&&!document.body.classList.contains('intro-on')&&parseFloat(getComputedStyle(hc).opacity)>.4&&scrollY<innerHeight*.9);
 })();
 
 // ---------- how we work: everything flows into the studio ----------
