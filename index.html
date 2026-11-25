@@ -139,11 +139,11 @@ footer{display:flex;justify-content:space-between;padding:26px var(--pad);font-s
 /* offers */
 #services{padding-top:0;padding-bottom:clamp(56px,6vw,96px);position:relative;z-index:3}
 .bridge{position:relative;height:clamp(80px,9vw,130px);display:flex;justify-content:center}
-.bridge .bl{width:0;border-left:1.5px dashed var(--blue);opacity:.6;height:100%}
+.bridge .bl{display:block;width:2px;align-self:stretch;background:repeating-linear-gradient(to bottom,var(--blue) 0 6px,transparent 6px 12px);opacity:.6}
 .bridge .bd{position:absolute;left:50%;top:0;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--blue);animation:drop 2.4s cubic-bezier(.6,0,.4,1) infinite}
 @keyframes drop{0%{top:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{top:100%;opacity:0}}
-.ohead{text-align:center;margin-bottom:clamp(28px,3vw,44px)}
-.ohead h2{font-weight:500;font-size:clamp(30px,3.4vw,54px);letter-spacing:-.04em;margin-top:10px}
+.ohead{text-align:center;margin-top:14px;margin-bottom:clamp(28px,3vw,44px)}
+.ohead h2{font-weight:500;font-size:clamp(30px,3.4vw,54px);letter-spacing:-.04em;margin-top:0}
 .offer{transition:transform .5s cubic-bezier(.2,.7,.1,1),box-shadow .5s,border-color .5s}
 .offer.lit{border-color:var(--blue);box-shadow:0 0 0 1.5px var(--blue)}
 .offer.feat.lit{box-shadow:0 0 0 3px #fff,0 0 0 4.5px var(--blue)}
@@ -413,7 +413,7 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 
 <section class="sec" id="services">
   <div class="bridge" aria-hidden="true"><span class="bl"></span><i class="bd"></i></div>
-  <div class="ohead"><span class="mono-l">03 / The work</span><h2>Three ways we work.</h2></div>
+  <div class="ohead"><h2>Three ways we work.</h2></div>
   <div class="offers">
     <article class="offer lit rv">
       <div class="otop"><span class="n">01</span></div>
