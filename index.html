@@ -15,7 +15,7 @@ a{color:inherit;text-decoration:none}
 .cap{font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--grey)}
 
 /* nav */
-.nav{position:fixed;top:0;left:0;right:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:18px var(--pad);transition:background .4s,backdrop-filter .4s}
+.nav{position:fixed;top:0;left:0;right:0;z-index:20;display:grid;grid-template-columns:1fr auto;align-items:center;padding:18px var(--pad);transition:background .4s,backdrop-filter .4s}
 .nav.solid{background:rgba(243,242,238,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 
 .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:.01em}
@@ -348,6 +348,32 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 
 .ilab{font-family:'VT323',ui-monospace,monospace!important;font-size:18px!important;letter-spacing:.12em!important;text-transform:uppercase}
 #iword{display:none!important}
+
+/* project form */
+#pj{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px}
+#pj[hidden]{display:none}
+.pjbg{position:absolute;inset:0;background:rgba(12,12,14,.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:pjf .3s ease}
+.pjc{position:relative;width:min(720px,100%);max-height:calc(100vh - 40px);overflow:auto;background:#F3F2EE;border-radius:18px;padding:clamp(24px,3.4vw,44px);box-shadow:0 30px 80px -20px rgba(0,0,0,.35);animation:pjin .45s cubic-bezier(.22,1,.36,1)}
+@keyframes pjf{from{opacity:0}}@keyframes pjin{from{opacity:0;transform:translateY(14px) scale(.985)}}
+.pjc h3{font-weight:500;font-size:clamp(24px,2.4vw,34px);letter-spacing:-.035em;margin:10px 0 24px}
+.pjx{position:absolute;top:14px;right:16px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:20px;line-height:1;cursor:pointer;color:var(--ink)}
+.pjg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pjg label{display:flex;flex-direction:column;gap:6px}
+.pjg label.full{grid-column:1/-1}
+.pjg span{font-size:12px;color:#6b6b70}
+.pjg input,.pjg select,.pjg textarea{font:inherit;font-size:15px;color:var(--ink);background:#fff;border:1px solid #dddbd4;border-radius:10px;padding:11px 12px;outline:none;transition:border-color .2s;width:100%;box-sizing:border-box}
+.pjg textarea{resize:vertical;min-height:110px}
+.pjg input:focus,.pjg select:focus,.pjg textarea:focus{border-color:var(--blue)}
+.pjg .bad{border-color:#d33}
+.pjhp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.pjf{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:22px}
+.pjmsg{font-size:13px;color:#6b6b70;margin:0}
+.pjc button[type=submit][disabled]{opacity:.55;pointer-events:none}
+.pjok{text-align:center;padding:20px 0 6px}
+.pjok svg{width:34px;height:34px;color:var(--blue)}
+.pjok h3{margin:14px 0 6px}.pjok p{color:#5f5f65;margin:0 0 22px}
+.pjok .pill{display:inline-flex}
+@media (max-width:640px){.pjg{grid-template-columns:1fr}}
 </style>
 </head>
 <body class="intro-on">
@@ -356,8 +382,8 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
 
 <nav class="nav" id="nav">
   <a class="brand" href="#top"><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span class="bn">NOISE</span></a>
-  <div class="links"><a href="#services">Services</a><a href="#contact">Contact</a></div>
-  <a class="pill" href="#contact">Start a project</a>
+  
+  <a class="pill" href="#start" data-start>Start a project</a>
 </nav>
 
 <section class="hero" id="top">
@@ -393,19 +419,19 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
       <div class="otop"><span class="n">01</span></div>
       <h3>Strategy &amp; Advisory</h3>
       <ul><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Brand and market positioning</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Audience and channel strategy</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Launch and go-to-market planning</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Talent and partnership strategy</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Executive advisory</span></li></ul>
-      <div class="ofoot"><span>Project or retainer.</span><a class="pill" href="#contact">Start here <span aria-hidden="true">→</span></a></div>
+      <div class="ofoot"><span>Project or retainer.</span><a class="pill" href="#start" data-start="Strategy &amp; Advisory">Start here <span aria-hidden="true">→</span></a></div>
     </article>
     <article class="offer lit rv">
       <div class="otop"><span class="n">02</span></div>
       <h3>Creative Partnership</h3>
       <ul><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Ongoing creative strategy</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Content production and editing</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Talent and creator sourcing</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Channel management</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Monthly performance reporting</span></li></ul>
-      <div class="ofoot"><span>Monthly retainer.</span><a class="pill" href="#contact">Start here <span aria-hidden="true">→</span></a></div>
+      <div class="ofoot"><span>Monthly retainer.</span><a class="pill" href="#start" data-start="Creative Partnership">Start here <span aria-hidden="true">→</span></a></div>
     </article>
     <article class="offer lit rv">
       <div class="otop"><span class="n">03</span></div>
       <h3>Campaign Development</h3>
       <ul><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Concept and creative direction</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Talent and partnership management</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Full-service production</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Multi-channel rollout</span></li><li><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><span>Post-campaign reporting</span></li></ul>
-      <div class="ofoot"><span>Per project.</span><a class="pill" href="#contact">Start here <span aria-hidden="true">→</span></a></div>
+      <div class="ofoot"><span>Per project.</span><a class="pill" href="#start" data-start="Campaign Development">Start here <span aria-hidden="true">→</span></a></div>
     </article>
   </div>
 
@@ -416,7 +442,7 @@ h1.hh .clip{padding-left:.08em;padding-right:.2em;margin-left:-.08em;margin-righ
     <div class="ctext">
       <span class="cap rv" style="color:rgba(255,255,255,.7)">Contact</span>
       <h2 class="giant"><span class="clip"><span class="w">Start a project.</span></span></h2>
-      <div class="row rv"><a class="pill light" href="#contact">Start a project</a><span class="mail">hello@noise.studio</span></div>
+      <div class="row rv"><a class="pill light" href="#start" data-start>Start a project</a></div>
     </div>
     <div class="globe" aria-hidden="true">
       <svg viewBox="-104 -104 208 208">
@@ -649,6 +675,56 @@ function fit(){if(innerWidth>=820){e.style.fontSize='';return}let f=15;e.style.f
   const lines=()=>Math.round(e.getBoundingClientRect().height/parseFloat(getComputedStyle(e).lineHeight));
   while(lines()>2&&f>12){f-=.25;e.style.fontSize=f+'px'}}
 document.fonts&&document.fonts.ready.then(fit);addEventListener('resize',fit);fit();})();
+</script>
+
+<div id="pj" role="dialog" aria-modal="true" aria-labelledby="pjh" hidden>
+  <div class="pjbg" data-close></div>
+  <form class="pjc" novalidate>
+    <button type="button" class="pjx" data-close aria-label="Close">&times;</button>
+    <span class="mono-l">Start a project</span>
+    <h3 id="pjh">Tell us what you're building.</h3>
+    <div class="pjg">
+      <label><span>Name</span><input name="name" required autocomplete="name"></label>
+      <label><span>Email</span><input name="email" type="email" required autocomplete="email"></label>
+      <label><span>Company / brand</span><input name="company" autocomplete="organization"></label>
+      <label><span>What you need</span><select name="service"><option>Strategy &amp; Advisory</option><option>Creative Partnership</option><option>Campaign Development</option><option>Not sure yet</option></select></label>
+      <label><span>Budget</span><select name="budget"><option value="">Select</option><option>Under $10k</option><option>$10k–$25k</option><option>$25k–$50k</option><option>$50k–$100k</option><option>$100k+</option></select></label>
+      <label><span>Timeline</span><select name="timeline"><option value="">Select</option><option>ASAP</option><option>1–3 months</option><option>3–6 months</option><option>Flexible</option></select></label>
+      <label class="full"><span>Project details</span><textarea name="details" rows="4" required placeholder="Goals, audience, timing, anything we should know."></textarea></label>
+      <input type="text" name="_honey" class="pjhp" tabindex="-1" autocomplete="off">
+    </div>
+    <div class="pjf"><p class="pjmsg" aria-live="polite"></p><button class="pill" type="submit">Send <span aria-hidden="true">→</span></button></div>
+    <div class="pjok" hidden><svg viewBox="-10 -10 20 20"><path class="starp" fill="currentColor"/></svg><h3>Received.</h3><p>Thanks — we'll be in touch within two business days.</p><button type="button" class="pill" data-close>Close</button></div>
+  </form>
+</div>
+
+<script>
+(()=>{
+const M=document.getElementById('pj'),F=M.querySelector('form'),msg=F.querySelector('.pjmsg'),ok=F.querySelector('.pjok'),btn=F.querySelector('button[type=submit]');
+// inbox kept out of the page text; assembled only when sending
+const TO=atob('amhhbHQxMkBnbWFpbC5jb20=');
+let last=null;
+function open(svc){last=document.activeElement;F.reset();ok.hidden=true;[...F.children].forEach(c=>{if(c!==ok)c.style.display=''});msg.textContent='';
+  if(svc)F.service.value=svc;M.hidden=false;document.body.style.overflow='hidden';setTimeout(()=>F.name.focus(),60)}
+function close(){M.hidden=true;document.body.style.overflow='';last&&last.focus&&last.focus()}
+document.querySelectorAll('[data-start]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();open(a.dataset.start.replace('&amp;','&'))}));
+M.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',close));
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!M.hidden)close()});
+if(location.hash==='#start')open();
+F.addEventListener('submit',async e=>{e.preventDefault();
+  if(F._honey.value)return;
+  let bad=false;['name','email','details'].forEach(n=>{const el=F[n],v=el.value.trim(),inv=!v||(n==='email'&&!/^\S+@\S+\.\S+$/.test(v));el.classList.toggle('bad',inv);if(inv)bad=true});
+  if(bad){msg.textContent='Please fill in the highlighted fields.';return}
+  btn.disabled=true;msg.textContent='Sending…';
+  const d=Object.fromEntries(new FormData(F));delete d._honey;
+  d._subject='New project inquiry — '+(d.company||d.name);d._replyto=d.email;d._template='table';d._captcha='false';
+  try{const r=await fetch('https://formsubmit.co/ajax/'+TO,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(d)});
+    const j=await r.json().catch(()=>({}));if(!r.ok||j.success==='false'||j.success===false)throw 0;
+    [...F.children].forEach(c=>{if(c!==ok)c.style.display='none'});ok.hidden=false;
+    const sp=ok.querySelector('.starp');if(sp&&typeof starD!=='undefined')sp.setAttribute('d',starD)}
+  catch(_){msg.textContent='Something went wrong. Please try again in a moment.'}
+  finally{btn.disabled=false}});
+})();
 </script>
 </body>
 </html>
