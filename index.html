@@ -481,7 +481,7 @@ function start(){
   let d='';for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?.42:1)*9.6;d+=(i?'L':'M')+(Math.cos(a)*r).toFixed(3)+' '+(Math.sin(a)*r).toFixed(3)}
   st.innerHTML=`<path d="${d}Z" fill="currentColor"/>`;st.style.color='#fff';st.style.filter='drop-shadow(0 0 16px rgba(255,255,255,.35))';delete st.dataset.led;
   const t0=performance.now();
-  (function count(){const k=Math.min(1,(performance.now()-t0)/2500);cnt.textContent='CH 0'+(1+Math.floor(k*2))+'  '+String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
+  (function count(){const k=Math.min(1,(performance.now()-t0)/2500);cnt.textContent=String(Math.floor(k*100)).padStart(3,'0');if(k<1)requestAnimationFrame(count)})();
   const SM='cubic-bezier(.65,0,.35,1)';
   // 1. letters rise in, one after another
   // typed out, one character at a time (no cursor)
