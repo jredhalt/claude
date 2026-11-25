@@ -704,8 +704,8 @@ document.fonts&&document.fonts.ready.then(fit);addEventListener('resize',fit);fi
 <script>
 (()=>{
 const M=document.getElementById('pj'),F=M.querySelector('form'),msg=F.querySelector('.pjmsg'),ok=F.querySelector('.pjok'),btn=F.querySelector('button[type=submit]');
-// inbox kept out of the page text; assembled only when sending
-const TO=atob('amhhbHQxMkBnbWFpbC5jb20=');
+// Web3Forms public form key (routes to the studio inbox; no address in the page)
+const KEY='9aa15fd3-0801-409f-97f2-900a1151a57c';
 let last=null;
 function open(svc){last=document.activeElement;F.reset();ok.hidden=true;[...F.children].forEach(c=>{if(c!==ok)c.style.display=''});msg.textContent='';
   if(svc)F.service.value=svc;M.hidden=false;document.body.style.overflow='hidden';setTimeout(()=>F.name.focus(),60)}
@@ -720,10 +720,10 @@ F.addEventListener('submit',async e=>{e.preventDefault();
   if(bad){msg.textContent='Please fill in the highlighted fields.';return}
   btn.disabled=true;msg.textContent='Sending…';
   const d=Object.fromEntries(new FormData(F));delete d._honey;
-  d._subject='New project inquiry — '+(d.company||d.name);d._replyto=d.email;d._template='table';d._captcha='false';
+  d.access_key=KEY;d.subject='New project inquiry — '+(d.company||d.name);d.from_name='NOISE website';d.replyto=d.email;
   const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),12000);
-  try{const r=await fetch('https://formsubmit.co/ajax/'+TO,{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(d)});
-    const j=await r.json().catch(()=>({}));if(!r.ok||j.success==='false'||j.success===false)throw 0;
+  try{const r=await fetch('https://api.web3forms.com/submit',{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(d)});
+    const j=await r.json().catch(()=>({}));if(!r.ok||j.success!==true)throw 0;
     [...F.children].forEach(c=>{if(c!==ok)c.style.display='none'});ok.hidden=false;
     const sp=ok.querySelector('.starp');if(sp&&typeof starD!=='undefined')sp.setAttribute('d',starD)}
   catch(_){msg.textContent='Something went wrong. Please try again in a moment.'}
